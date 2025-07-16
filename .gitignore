@@ -46,10 +46,12 @@ logs/
 settings.json
 user_settings.json
 
-# Test files
-test_*.py
-*_test.py
-tests/
+# Test files and logs
+tests/debug/*.log
+tests/**/test_output/
+tests/**/temp_*/
+test_results/
+coverage/
 
 # Coverage reports
 htmlcov/
