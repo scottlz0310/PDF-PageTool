@@ -66,10 +66,17 @@ def test_main_window():
             menu_bar = main_window.ui.menubar
             print(f"✅ メニューバー存在確認: {type(menu_bar)}")
             
-            # ネイティブメニューバー設定確認
-            if hasattr(menu_bar, 'isNativeMenuBar'):
-                is_native = menu_bar.isNativeMenuBar()
-                print(f"📋 ネイティブメニューバー設定: {is_native}")
+        # ネイティブメニューバー設定確認
+        if hasattr(menu_bar, 'isNativeMenuBar'):
+            is_native = menu_bar.isNativeMenuBar()
+            print(f"📋 ネイティブメニューバー設定: {is_native}")
+        
+        # ウィンドウアイコンの確認
+        window_icon = main_window.windowIcon()
+        if not window_icon.isNull():
+            print("✅ ウィンドウアイコンが設定されています")
+        else:
+            print("⚠️ ウィンドウアイコンが設定されていません")
         
         main_window.show()
         main_window.hide()

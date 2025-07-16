@@ -139,6 +139,14 @@ class MainWindow(QMainWindow):
         # ウィンドウタイトル設定
         self.setWindowTitle("PDF-PageTool")
         
+        # ウィンドウアイコン設定
+        icon_path = Path(__file__).parent.parent.parent / "asset" / "ICON案V003.ico"
+        if icon_path.exists():
+            self.setWindowIcon(QtGui.QIcon(str(icon_path)))
+            self.logger.debug(f"Window icon set: {icon_path}")
+        else:
+            self.logger.warning(f"Icon file not found: {icon_path}")
+        
         # メニューバーの問題を修正（クリックのみで展開、オンマウス展開を無効化）
         # より安全なアプローチ：既存のメニューバーを直接制御
         menu_bar = self.ui.menubar if hasattr(self.ui, 'menubar') else self.menuBar()

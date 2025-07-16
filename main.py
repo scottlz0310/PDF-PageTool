@@ -143,11 +143,20 @@ def main():
         
         # PyQt6アプリケーションを初期化
         from PyQt6.QtWidgets import QApplication
+        from PyQt6.QtGui import QIcon
         from src.ui import create_main_window
         
         app = QApplication(sys.argv)
         app.setApplicationName("PDF-PageTool")
         app.setApplicationVersion("0.1.0")
+        
+        # アプリケーションアイコンを設定
+        icon_path = project_root / "asset" / "ICON案V003.ico"
+        if icon_path.exists():
+            app.setWindowIcon(QIcon(str(icon_path)))
+            logger.debug(f"Application icon set: {icon_path}")
+        else:
+            logger.warning(f"Icon file not found: {icon_path}")
         
         # メインウィンドウを作成・表示
         main_window = create_main_window(valid_files, args.log_level)
