@@ -1,0 +1,57 @@
+# Python virtual environment
+venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+.installed.cfg
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+*~
+
+# IDE specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# System files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+.Spotlight-V100
+.Trashes
+
+# Environment variables
+.env
+
+# Application specific files
+*.pdf
+temp_*/
+thumbnails/
+cache/
+logs/
+settings.json
+user_settings.json
+
+# Test files
+test_*.py
+*_test.py
+tests/
+
+# Coverage reports
+htmlcov/
+.coverage
+.pytest_cache/

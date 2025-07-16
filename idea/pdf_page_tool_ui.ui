@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+  <class>MainWindow</class>
+  <widget class="QMainWindow" name="MainWindow">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1200</width>
+        <height>800</height>
+      </rect>
+    </property>
+    <property name="windowTitle">
+      <string>PDF-PageTool</string>
+    </property>
+    <widget class="QWidget" name="centralwidget">
+      <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+          <widget class="QSplitter" name="splitter">
+            <property name="orientation">
+              <enum>Qt::Vertical</enum>
+            </property>
+            <widget class="QScrollArea" name="scrollAreaInputs">
+              <property name="widgetResizable">
+                <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="scrollAreaWidgetInputs">
+                <property name="geometry">
+                  <rect>
+                    <x>0</x>
+                    <y>0</y>
+                    <width>1182</width>
+                    <height>350</height>
+                  </rect>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayoutInputs">
+                  <item>
+                    <widget class="QGroupBox" name="groupBoxPDF1">
+                      <property name="title">
+                        <string>SampleFile1.pdf</string>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayoutPDF1">
+                        <item>
+                          <widget class="QScrollArea" name="scrollAreaPDF1">
+                            <property name="widgetResizable">
+                              <bool>true</bool>
+                            </property>
+                            <widget class="QWidget" name="scrollAreaWidgetPDF1">
+                              <property name="geometry">
+                                <rect>
+                                  <x>0</x>
+                                  <y>0</y>
+                                  <width>575</width>
+                                  <height>310</height>
+                                </rect>
+                              </property>
+                              <layout class="QGridLayout" name="gridLayoutPDF1">
+                                <property name="spacing">
+                                  <number>10</number>
+                                </property>
+                              </layout>
+                            </widget>
+                          </widget>
+                        </item>
+                      </layout>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QGroupBox" name="groupBoxPDF2">
+                      <property name="title">
+                        <string>SampleFile2.pdf</string>
+                      </property>
+                      <layout class="QVBoxLayout" name="verticalLayoutPDF2">
+                        <item>
+                          <widget class="QScrollArea" name="scrollAreaPDF2">
+                            <property name="widgetResizable">
+                              <bool>true</bool>
+                            </property>
+                            <widget class="QWidget" name="scrollAreaWidgetPDF2">
+                              <property name="geometry">
+                                <rect>
+                                  <x>0</x>
+                                  <y>0</y>
+                                  <width>575</width>
+                                  <height>310</height>
+                                </rect>
+                              </property>
+                              <layout class="QGridLayout" name="gridLayoutPDF2">
+                                <property name="spacing">
+                                  <number>10</number>
+                                </property>
+                              </layout>
+                            </widget>
+                          </widget>
+                        </item>
+                      </layout>
+                    </widget>
+                  </item>
+                </layout>
+              </widget>
+            </widget>
+            <widget class="QGroupBox" name="groupBoxOutput">
+              <property name="title">
+                <string>OutPut.pdf</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayoutOutput">
+                <item>
+                  <widget class="QScrollArea" name="scrollAreaOutput">
+                    <property name="widgetResizable">
+                      <bool>true</bool>
+                    </property>
+                    <widget class="QWidget" name="scrollAreaWidgetOutput">
+                      <property name="geometry">
+                        <rect>
+                          <x>0</x>
+                          <y>0</y>
+                          <width>1182</width>
+                          <height>350</height>
+                        </rect>
+                      </property>
+                      <layout class="QGridLayout" name="gridLayoutOutput">
+                        <property name="spacing">
+                          <number>10</number>
+                        </property>
+                      </layout>
+                    </widget>
+                  </widget>
+                </item>
+              </layout>
+            </widget>
+          </widget>
+        </item>
+      </layout>
+    </widget>
+    <widget class="QMenuBar" name="menubar">
+      <property name="geometry">
+        <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>1200</width>
+          <height>22</height>
+        </rect>
+      </property>
+      <widget class="QMenu" name="menuFile">
+        <property name="title">
+          <string>ファイル</string>
+        </property>
+        <addaction name="actionOpen"/>
+        <addaction name="actionSave"/>
+        <addaction name="actionSaveAs"/>
+        <addaction name="actionClose"/>
+      </widget>
+      <widget class="QMenu" name="menuEdit">
+        <property name="title">
+          <string>編集</string>
+        </property>
+        <addaction name="actionRotateRight"/>
+        <addaction name="actionRotateLeft"/>
+        <addaction name="actionRotate180"/>
+        <addaction name="actionRemovePage"/>
+      </widget>
+      <widget class="QMenu" name="menuTool">
+        <property name="title">
+          <string>ツール</string>
+        </property>
+        <addaction name="actionDarkMode"/>
+        <addaction name="actionThumbnailSize"/>
+        <addaction name="actionSettings"/>
+      </widget>
+      <widget class="QMenu" name="menuHelp">
+        <property name="title">
+          <string>ヘルプ</string>
+        </property>
+        <addaction name="actionAbout"/>
+      </widget>
+      <addaction name="menuFile"/>
+      <addaction name="menuEdit"/>
+      <addaction name="menuTool"/>
+      <addaction name="menuHelp"/>
+    </widget>
+    <widget class="QStatusBar" name="statusbar">
+      <widget class="QLabel" name="labelZoom">
+        <property name="geometry">
+          <rect>
+            <x>1100</x>
+            <y>0</y>
+            <width>100</width>
+            <height>22</height>
+          </rect>
+        </property>
+        <property name="text">
+          <string>100%</string>
+        </property>
+        <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignVCenter</set>
+        </property>
+      </widget>
+    </widget>
+    <action name="actionOpen">
+      <property name="text">
+        <string>開く</string>
+      </property>
+    </action>
+    <action name="actionSave">
+      <property name="text">
+        <string>保存</string>
+      </property>
+    </action>
+    <action name="actionSaveAs">
+      <property name="text">
+        <string>名前を付けて保存</string>
+      </property>
+    </action>
+    <action name="actionClose">
+      <property name="text">
+        <string>閉じる</string>
+      </property>
+    </action>
+    <action name="actionRotateRight">
+      <property name="text">
+        <string>右90°回転</string>
+      </property>
+    </action>
+    <action name="actionRotateLeft">
+      <property name="text">
+        <string>左90°回転</string>
+      </property>
+    </action>
+    <action name="actionRotate180">
+      <property name="text">
+        <string>180°回転</string>
+      </property>
+    </action>
+    <action name="actionRemovePage">
+      <property name="text">
+        <string>ページの登録解除</string>
+      </property>
+    </action>
+    <action name="actionDarkMode">
+      <property name="text">
+        <string>ダークモード設定</string>
+      </property>
+    </action>
+    <action name="actionThumbnailSize">
+      <property name="text">
+        <string>サムネイルサイズ設定</string>
+      </property>
+    </action>
+    <action name="actionSettings">
+      <property name="text">
+        <string>詳細設定</string>
+      </property>
+    </action>
+    <action name="actionAbout">
+      <property name="text">
+        <string>バージョン表示</string>
+      </property>
+    </action>
+  </widget>
+</ui>

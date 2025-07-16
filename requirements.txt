@@ -1,0 +1,21 @@
+# GUI Framework
+PyQt6>=6.4.0
+
+# PDF Processing
+PyPDF2>=3.0.0
+pikepdf>=8.0.0
+pdf2image>=1.16.0
+
+# Image Processing
+Pillow>=9.0.0
+
+# Utilities
+python-dotenv>=1.0.0
+
+# Logging
+colorlog>=6.7.0
+
+# System requirements
+# For pdf2image on Windows: poppler-utils
+# For pdf2image on macOS: brew install poppler
+# For pdf2image on Linux: sudo apt-get install poppler-utils
