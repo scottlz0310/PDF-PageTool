@@ -151,7 +151,7 @@ def main():
         app.setApplicationVersion("0.1.0")
         
         # アプリケーションアイコンを設定
-        icon_path = project_root / "asset" / "ICON案V003.ico"
+        icon_path = project_root / "asset" / "pdf-tool.ico"
         if icon_path.exists():
             app.setWindowIcon(QIcon(str(icon_path)))
             logger.debug(f"Application icon set: {icon_path}")

@@ -140,7 +140,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("PDF-PageTool")
         
         # ウィンドウアイコン設定
-        icon_path = Path(__file__).parent.parent.parent / "asset" / "ICON案V003.ico"
+        icon_path = Path(__file__).parent.parent.parent / "asset" / "pdf-tool.ico"
         if icon_path.exists():
             self.setWindowIcon(QtGui.QIcon(str(icon_path)))
             self.logger.debug(f"Window icon set: {icon_path}")

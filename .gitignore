@@ -57,3 +57,6 @@ coverage/
 htmlcov/
 .coverage
 .pytest_cache/
+
+# Development notes
+idea/
