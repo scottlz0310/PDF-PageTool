@@ -209,12 +209,8 @@ class MainWindow(QMainWindow):
         self._apply_theme_to_widgets()
         
         # ウィンドウフレームとタイトルバーを強制的にテーマに合わせる
-        self.setStyleSheet(f"""
-            QMainWindow {{
-                background-color: {self.theme_manager._themes[self.theme_manager._current_theme]['backgroundColor']};
-                border: 2px solid {self.theme_manager._themes[self.theme_manager._current_theme]['panel']['border']};
-            }}
-        """)
+        # 統合テーママネージャーのスタイルシートを適用
+        self.theme_manager.apply_theme_to_widget(self)
         
         # ウィンドウが表示された後にもう一度テーマを適用（確実にテーマが適用されるよう）
         QtCore.QTimer.singleShot(100, self._force_theme_reapply)
