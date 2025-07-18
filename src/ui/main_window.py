@@ -599,21 +599,18 @@ class MainWindow(QMainWindow):
             self.logger.error(f"Failed to apply settings changes: {e}")
     
     def _apply_theme(self, theme_name: str):
-        """テーマを適用（新しいテーママネージャーを使用）"""
+        """テーマを適用（統合テーママネージャーを使用）"""
         try:
-            # 新しいテーママネージャーを使用してテーマを適用
-            app = QApplication.instance()
-            if isinstance(app, QApplication):
-                self.theme_manager.apply_theme(theme_name, app)
+            # 統合テーママネージャーを使用してテーマを適用
+            success = self.theme_manager.set_theme(theme_name)
+            
+            if success:
+                # 個別ウィジェットにもテーマを適用
+                self._apply_theme_to_widgets()
                 
-            # 公式Theme-Managerでもテーマを適用（確実にテーマが適用されるよう重複実行）
-            self.theme_manager.set_theme(theme_name)
-            self.theme_manager.apply_theme_to_application(app)
-            
-            # 個別ウィジェットにもテーマを適用
-            self._apply_theme_to_widgets()
-            
-            self.logger.info(f"Applied theme: {theme_name}")
+                self.logger.info(f"Applied theme: {theme_name}")
+            else:
+                self.logger.error(f"Failed to set theme: {theme_name}")
                 
         except Exception as e:
             self.logger.error(f"Failed to apply theme: {e}")
@@ -942,7 +939,7 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "エラー", f"バッチ処理ダイアログの表示に失敗しました: {e}")
     
     def open_theme_manager(self):
-        """公式Theme-Manager互換のテーマ設定ダイアログを開く"""
+        """統合テーママネージャーのテーマ設定ダイアログを開く"""
         try:
             from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QComboBox, QDialogButtonBox
             
@@ -964,7 +961,7 @@ class MainWindow(QMainWindow):
             
             # 利用可能なテーマを取得
             themes = self.theme_manager.get_available_themes()
-            current_theme = self.theme_manager.get_current_theme_name()
+            current_theme = self.theme_manager.get_current_theme()
             original_theme = current_theme  # 元のテーマを保存
             
             for theme_name, theme_config in themes.items():
@@ -979,10 +976,8 @@ class MainWindow(QMainWindow):
             def apply_preview_theme():
                 selected_theme = theme_combo.currentData()
                 if selected_theme:
-                    self.theme_manager.set_theme(selected_theme, save_settings=False)
-                    app = QApplication.instance()
-                    if isinstance(app, QApplication):
-                        self.theme_manager.apply_theme_to_application(app)
+                    # プレビュー用の一時的なテーマ変更
+                    self.theme_manager.preview_theme(selected_theme)
                     self._apply_theme_to_widgets()
             
             theme_combo.currentTextChanged.connect(apply_preview_theme)
@@ -1003,17 +998,13 @@ class MainWindow(QMainWindow):
                 # 選択されたテーマで確定保存
                 selected_theme = theme_combo.currentData()
                 if selected_theme:
-                    self.theme_manager.set_theme(selected_theme, save_settings=True)
+                    self.theme_manager.set_theme(selected_theme)
                     self.logger.info(f"Theme saved: {selected_theme}")
                 dialog.accept()
             
             def reject_changes():
                 # 元のテーマに戻す
-                self.theme_manager.set_theme(original_theme, save_settings=False)
-                app = QApplication.instance()
-                if isinstance(app, QApplication):
-                    self.theme_manager.apply_theme_to_application(app)
-                self._apply_theme_to_widgets()
+                self.theme_manager.set_theme(original_theme)
                 self.logger.info(f"Theme reverted to: {original_theme}")
                 dialog.reject()
             
@@ -1031,11 +1022,9 @@ class MainWindow(QMainWindow):
     def _force_theme_reapply(self):
         """ウィンドウ表示後にテーマを強制的に再適用"""
         try:
-            current_theme = self.theme_manager._current_theme
+            current_theme = self.theme_manager.get_current_theme()
             if current_theme:
-                app = QApplication.instance()
-                if isinstance(app, QApplication):
-                    self.theme_manager.apply_theme_to_application(app)
+                self.theme_manager.apply_theme_to_application()
                 self._apply_theme_to_widgets()
                 self.logger.debug(f"Force reapplied theme: {current_theme}")
         except Exception as e:

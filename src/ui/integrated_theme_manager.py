@@ -324,6 +324,36 @@ class PDFPageToolThemeManager(QObject):
             logger.error(f"Error setting theme '{theme_name}': {e}")
             return False
     
+    def preview_theme(self, theme_name: str) -> bool:
+        """一時的にテーマをプレビュー（設定には保存しない）"""
+        try:
+            # 現在のテーマを保存
+            old_theme = self._current_theme
+            
+            # 一時的にテーマを変更
+            self._current_theme = theme_name
+            
+            # PyPIパッケージのThemeControllerで一時的にテーマを設定（保存しない）
+            if self.theme_controller.set_theme(theme_name, save_settings=False):
+                # アプリケーションにテーマを適用（失敗してもプレビューは成功とする）
+                self.apply_theme_to_application()
+                logger.debug(f"Theme previewed: {theme_name}")
+                return True
+            else:
+                # テーマ設定失敗の場合は元のテーマに戻す
+                self._current_theme = old_theme
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error previewing theme '{theme_name}': {e}")
+            # エラーが発生した場合は元のテーマに戻す
+            try:
+                self._current_theme = old_theme
+                self.theme_controller.set_theme(old_theme, save_settings=False)
+            except:
+                pass
+            return False
+    
     def apply_theme_to_application(self, app: Optional[QApplication] = None) -> bool:
         """アプリケーション全体にテーマを適用"""
         try:

@@ -293,15 +293,14 @@ class SettingsDialog(QDialog):
         layout.addStretch()
     
     def _on_theme_changed(self, theme_name: str):
-        """テーマ変更時の処理（公式Theme-Manager互換）"""
+        """テーマ変更時の処理（統合テーママネージャー互換）"""
         try:
             # 一時設定を更新
             self.temp_settings["theme"] = theme_name
             
-            # 公式Theme-Manager互換のテーマコントローラーを使用してプレビュー適用
-            self.theme_manager.set_theme(theme_name, save_settings=False)
-            self.theme_manager.apply_theme_to_application()
-                
+            # 統合テーママネージャーを使用してプレビュー適用
+            self.theme_manager.preview_theme(theme_name)
+            
             self.logger.debug(f"Theme changed to: {theme_name}")
         except Exception as e:
             self.logger.error(f"Failed to change theme: {e}")
