@@ -19,8 +19,7 @@ from .page_widgets import PageThumbnailWidget, OutputArea
 from .settings_dialog import SettingsDialog
 from .thumbnail_size_dialog import ThumbnailSizeDialog
 from .batch_processor import BatchProcessorDialog
-from .theme_manager import get_theme_manager
-from .official_theme_manager import get_theme_controller
+from .integrated_theme_manager import get_integrated_theme_manager
 from .keyboard_shortcuts import get_shortcut_manager, setup_main_window_shortcuts
 from ..pdf_operations import PDFOperations, PDFPageInfo
 from ..utils.logger import get_logger
@@ -80,11 +79,8 @@ class MainWindow(QMainWindow):
         self.log_level = self.settings_manager.get("log_level", log_level)
         self.logger = get_logger("MainWindow", str(self.log_level))
         
-        # 公式Theme-Manager互換のテーママネージャーを初期化
-        self.theme_controller = get_theme_controller()
-        
-        # 後方互換性のため従来のテーママネージャーも保持
-        self.theme_manager = get_theme_manager(self.settings_manager)
+        # 統合テーママネージャーを初期化
+        self.theme_manager = get_integrated_theme_manager(self.settings_manager)
         
         # ショートカットマネージャーを初期化
         self.shortcut_manager = get_shortcut_manager(self, self.settings_manager)
@@ -204,10 +200,10 @@ class MainWindow(QMainWindow):
         # 公式Theme-Manager互換のテーマを適用
         app = QApplication.instance()
         if isinstance(app, QApplication):
-            self.theme_controller.apply_theme_to_application(app)
+            self.theme_manager.apply_theme_to_application(app)
         
         # メインウィンドウにも直接テーマを適用
-        self.theme_controller.apply_theme_to_widget(self)
+        self.theme_manager.apply_theme_to_widget(self)
             
         # 個別ウィジェットにもテーマを適用（初期化時）
         self._apply_theme_to_widgets()
@@ -215,8 +211,8 @@ class MainWindow(QMainWindow):
         # ウィンドウフレームとタイトルバーを強制的にテーマに合わせる
         self.setStyleSheet(f"""
             QMainWindow {{
-                background-color: {self.theme_controller._themes[self.theme_controller._current_theme]['backgroundColor']};
-                border: 2px solid {self.theme_controller._themes[self.theme_controller._current_theme]['panel']['border']};
+                background-color: {self.theme_manager._themes[self.theme_manager._current_theme]['backgroundColor']};
+                border: 2px solid {self.theme_manager._themes[self.theme_manager._current_theme]['panel']['border']};
             }}
         """)
         
@@ -615,8 +611,8 @@ class MainWindow(QMainWindow):
                 self.theme_manager.apply_theme(theme_name, app)
                 
             # 公式Theme-Managerでもテーマを適用（確実にテーマが適用されるよう重複実行）
-            self.theme_controller.set_theme(theme_name)
-            self.theme_controller.apply_theme_to_application(app)
+            self.theme_manager.set_theme(theme_name)
+            self.theme_manager.apply_theme_to_application(app)
             
             # 個別ウィジェットにもテーマを適用
             self._apply_theme_to_widgets()
@@ -630,7 +626,7 @@ class MainWindow(QMainWindow):
         """個別ウィジェットにテーマを強制適用"""
         try:
             # メインウィンドウとその子ウィジェットすべてにテーマを適用
-            self.theme_controller.apply_theme_to_widget(self)
+            self.theme_manager.apply_theme_to_widget(self)
             
             # 重要なウィジェット群に個別適用
             widgets_to_theme = [
@@ -650,16 +646,16 @@ class MainWindow(QMainWindow):
             
             for widget in widgets_to_theme:
                 if widget:
-                    self.theme_controller.apply_theme_to_widget(widget)
+                    self.theme_manager.apply_theme_to_widget(widget)
             
             # 出力エリアのページウィジェットにもテーマを適用
             if hasattr(self, 'output_area') and self.output_area:
-                self.theme_controller.apply_theme_to_widget(self.output_area)
+                self.theme_manager.apply_theme_to_widget(self.output_area)
                 
             # 入力エリアのページウィジェットにもテーマを適用  
             for widgets_list in self.thumbnail_widgets.values():
                 for widget in widgets_list:
-                    self.theme_controller.apply_theme_to_widget(widget)
+                    self.theme_manager.apply_theme_to_widget(widget)
                     
         except Exception as e:
             self.logger.error(f"Failed to apply theme to individual widgets: {e}")
@@ -971,8 +967,8 @@ class MainWindow(QMainWindow):
             theme_combo = QComboBox()
             
             # 利用可能なテーマを取得
-            themes = self.theme_controller.get_available_themes()
-            current_theme = self.theme_controller.get_current_theme_name()
+            themes = self.theme_manager.get_available_themes()
+            current_theme = self.theme_manager.get_current_theme_name()
             original_theme = current_theme  # 元のテーマを保存
             
             for theme_name, theme_config in themes.items():
@@ -987,10 +983,10 @@ class MainWindow(QMainWindow):
             def apply_preview_theme():
                 selected_theme = theme_combo.currentData()
                 if selected_theme:
-                    self.theme_controller.set_theme(selected_theme, save_settings=False)
+                    self.theme_manager.set_theme(selected_theme, save_settings=False)
                     app = QApplication.instance()
                     if isinstance(app, QApplication):
-                        self.theme_controller.apply_theme_to_application(app)
+                        self.theme_manager.apply_theme_to_application(app)
                     self._apply_theme_to_widgets()
             
             theme_combo.currentTextChanged.connect(apply_preview_theme)
@@ -1011,16 +1007,16 @@ class MainWindow(QMainWindow):
                 # 選択されたテーマで確定保存
                 selected_theme = theme_combo.currentData()
                 if selected_theme:
-                    self.theme_controller.set_theme(selected_theme, save_settings=True)
+                    self.theme_manager.set_theme(selected_theme, save_settings=True)
                     self.logger.info(f"Theme saved: {selected_theme}")
                 dialog.accept()
             
             def reject_changes():
                 # 元のテーマに戻す
-                self.theme_controller.set_theme(original_theme, save_settings=False)
+                self.theme_manager.set_theme(original_theme, save_settings=False)
                 app = QApplication.instance()
                 if isinstance(app, QApplication):
-                    self.theme_controller.apply_theme_to_application(app)
+                    self.theme_manager.apply_theme_to_application(app)
                 self._apply_theme_to_widgets()
                 self.logger.info(f"Theme reverted to: {original_theme}")
                 dialog.reject()
@@ -1039,11 +1035,11 @@ class MainWindow(QMainWindow):
     def _force_theme_reapply(self):
         """ウィンドウ表示後にテーマを強制的に再適用"""
         try:
-            current_theme = self.theme_controller._current_theme
+            current_theme = self.theme_manager._current_theme
             if current_theme:
                 app = QApplication.instance()
                 if isinstance(app, QApplication):
-                    self.theme_controller.apply_theme_to_application(app)
+                    self.theme_manager.apply_theme_to_application(app)
                 self._apply_theme_to_widgets()
                 self.logger.debug(f"Force reapplied theme: {current_theme}")
         except Exception as e:

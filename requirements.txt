@@ -1,6 +1,9 @@
 # GUI Framework
 PyQt6>=6.4.0
 
+# Theme Management
+qt-theme-manager>=0.1.0
+
 # PDF Processing
 PyPDF2>=3.0.0
 pikepdf>=8.0.0

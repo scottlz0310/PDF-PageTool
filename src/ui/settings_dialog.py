@@ -14,8 +14,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QColor
 
 from ..utils.logger import get_logger
-from .theme_manager import get_theme_manager
-from .official_theme_manager import get_theme_controller
+from .integrated_theme_manager import get_integrated_theme_manager
 
 
 class SettingsDialog(QDialog):
@@ -29,11 +28,8 @@ class SettingsDialog(QDialog):
         self.current_settings = current_settings.copy()
         self.temp_settings = current_settings.copy()
         
-        # 公式Theme-Manager互換のテーママネージャーを取得
-        self.theme_controller = get_theme_controller()
-        
-        # 後方互換性のため従来のテーママネージャーも保持
-        self.theme_manager = get_theme_manager()
+        # 統合テーママネージャーを取得
+        self.theme_manager = get_integrated_theme_manager()
         
         self._setup_ui()
         self._load_settings()
@@ -141,7 +137,7 @@ class SettingsDialog(QDialog):
         theme_layout_h.addWidget(QLabel("テーマ:"))
         self.theme_combo = QComboBox()
         # 公式Theme-Manager互換のテーママネージャーから利用可能なテーマを取得
-        available_themes = list(self.theme_controller.get_available_themes().keys())
+        available_themes = list(self.theme_manager.get_available_themes().keys())
         self.theme_combo.addItems(available_themes)
         # テーマ変更時の処理を接続
         self.theme_combo.currentTextChanged.connect(self._on_theme_changed)
@@ -303,8 +299,8 @@ class SettingsDialog(QDialog):
             self.temp_settings["theme"] = theme_name
             
             # 公式Theme-Manager互換のテーマコントローラーを使用してプレビュー適用
-            self.theme_controller.set_theme(theme_name, save_settings=False)
-            self.theme_controller.apply_theme_to_application()
+            self.theme_manager.set_theme(theme_name, save_settings=False)
+            self.theme_manager.apply_theme_to_application()
                 
             self.logger.debug(f"Theme changed to: {theme_name}")
         except Exception as e:
