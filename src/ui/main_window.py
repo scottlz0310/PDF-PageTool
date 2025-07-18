@@ -115,8 +115,10 @@ class MainWindow(QMainWindow):
         # 既存の出力エリアを置き換え
         self.ui.gridLayoutOutput.addWidget(self.output_area, 0, 0)
         
-        # ドロップ受け入れ設定
+        # ドロップ受け入れ設定（メインウィンドウレベル）
         self.setAcceptDrops(True)
+        self.logger.info("Main window drop acceptance enabled")
+        self.logger.info(f"Main window acceptDrops status: {self.acceptDrops()}")
         
         # UI初期化
         self._setup_ui()
@@ -180,9 +182,14 @@ class MainWindow(QMainWindow):
             # フォーカス外れたら自動的に閉じる設定
             menu.aboutToHide.connect(lambda: self.setFocus())
         
-        # 出力エリアをドロップターゲットに設定
-        self.ui.scrollAreaOutput.setAcceptDrops(True)
-        self.ui.scrollAreaWidgetOutput.setAcceptDrops(True)
+        # 出力エリアをドロップターゲットに設定（ページドロップ用）
+        # 注意: 外部ファイルドロップはメインウィンドウで処理するため、子ウィジェットでは無効化
+        # self.ui.scrollAreaOutput.setAcceptDrops(True)
+        # self.ui.scrollAreaWidgetOutput.setAcceptDrops(True)
+        
+        # 入力エリアのドロップも無効化（メインウィンドウで処理）
+        # self.ui.scrollAreaInputs.setAcceptDrops(True)
+        # self.ui.scrollAreaWidgetInputs.setAcceptDrops(True)
         
         # 初期状態では入力PDFエリアを非表示
         self.ui.groupBoxPDF1.setVisible(False)
@@ -338,7 +345,7 @@ class MainWindow(QMainWindow):
         # ウィンドウリサイズ時のスプリッター比率維持
         self.ui.splitter.setStretchFactor(0, 1)  # 上部パネル
         self.ui.splitter.setStretchFactor(1, 1)  # 下部パネル
-
+    
     def _setup_inputs_scroll_area(self):
         """上部パネルのスクロールエリアを初期設定"""
         # 水平スクロールバーを表示
@@ -830,21 +837,79 @@ class MainWindow(QMainWindow):
     
     def dragEnterEvent(self, event: QDragEnterEvent):
         """ドラッグエンター時の処理"""
-        if event.mimeData().hasUrls():
-            event.acceptProposedAction()
+        try:
+            self.logger.info("=== dragEnterEvent called ===")
+            
+            # mimeDataがNoneでないかチェック
+            mime_data = event.mimeData()
+            if mime_data is None:
+                self.logger.error("mimeData is None")
+                event.ignore()
+                return
+            
+            self.logger.info(f"mimeData available: {mime_data}")
+            self.logger.info(f"Has URLs: {mime_data.hasUrls()}")
+            self.logger.info(f"Formats: {mime_data.formats()}")
+            
+            if mime_data.hasUrls():
+                # PDFファイルがあるかチェック
+                pdf_files = []
+                urls = mime_data.urls()
+                self.logger.info(f"Number of URLs: {len(urls)}")
+                
+                for i, url in enumerate(urls):
+                    self.logger.info(f"URL {i}: {url.toString()}")
+                    self.logger.info(f"  isLocalFile: {url.isLocalFile()}")
+                    if url.isLocalFile():
+                        file_path = url.toLocalFile()
+                        self.logger.info(f"  Local file path: {file_path}")
+                        self.logger.info(f"  Is PDF: {file_path.lower().endswith('.pdf')}")
+                        if file_path.lower().endswith('.pdf'):
+                            pdf_files.append(file_path)
+                
+                if pdf_files:
+                    event.acceptProposedAction()
+                    self.logger.info(f"ACCEPTING drop of {len(pdf_files)} PDF files")
+                    return
+                else:
+                    self.logger.warning("No PDF files in drop, REJECTING")
+            else:
+                self.logger.warning("No URLs in mimeData, REJECTING")
+                
+            event.ignore()
+        except Exception as e:
+            self.logger.error(f"Error in dragEnterEvent: {e}")
+            event.ignore()
     
     def dropEvent(self, event: QDropEvent):
         """ドロップ時の処理"""
-        files = []
-        for url in event.mimeData().urls():
-            if url.isLocalFile():
-                file_path = url.toLocalFile()
-                if file_path.lower().endswith('.pdf'):
-                    files.append(file_path)
-        
-        if files:
-            self.load_pdf_files(files)
-            event.acceptProposedAction()
+        try:
+            self.logger.info("=== dropEvent called ===")
+            
+            # mimeDataがNoneでないかチェック
+            mime_data = event.mimeData()
+            if mime_data is None:
+                self.logger.error("mimeData is None in dropEvent")
+                event.ignore()
+                return
+            
+            files = []
+            for url in mime_data.urls():
+                if url.isLocalFile():
+                    file_path = url.toLocalFile()
+                    if file_path.lower().endswith('.pdf'):
+                        files.append(file_path)
+            
+            if files:
+                self.logger.info(f"Successfully dropping {len(files)} PDF files: {[Path(f).name for f in files]}")
+                self.load_pdf_files(files)
+                event.acceptProposedAction()
+            else:
+                self.logger.warning("No valid PDF files in drop")
+                event.ignore()
+        except Exception as e:
+            self.logger.error(f"Error in dropEvent: {e}")
+            event.ignore()
     
     def closeEvent(self, event):
         """ウィンドウクローズ時の処理"""

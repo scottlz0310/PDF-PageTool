@@ -192,6 +192,14 @@ class SettingsDialog(QDialog):
         self.show_tooltips_check = QCheckBox("ツールチップを表示")
         display_layout.addWidget(self.show_tooltips_check)
         
+        # Waylandドラッグ&ドロップ問題の回避策
+        self.show_file_selection_button_check = QCheckBox("ファイル選択ボタンを表示（ドラッグ&ドロップ代替手段）")
+        self.show_file_selection_button_check.setToolTip(
+            "Wayland環境でドラッグ&ドロップが機能しない場合の代替手段として、\n"
+            "ファイル選択ボタンを表示します"
+        )
+        display_layout.addWidget(self.show_file_selection_button_check)
+        
         layout.addWidget(display_group)
         
         layout.addStretch()
@@ -339,6 +347,7 @@ class SettingsDialog(QDialog):
         self.show_page_numbers_check.setChecked(self.temp_settings.get("show_page_numbers", True))
         self.show_file_names_check.setChecked(self.temp_settings.get("show_file_names", True))
         self.show_tooltips_check.setChecked(self.temp_settings.get("show_tooltips", True))
+        self.show_file_selection_button_check.setChecked(self.temp_settings.get("show_file_selection_button", False))
         
         # パフォーマンス設定
         self.cache_size_spin.setValue(self.temp_settings.get("cache_size_mb", 200))

@@ -46,7 +46,13 @@ class PageThumbnailWidget(QLabel):
         self.setFixedSize(160, 220)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setFrameStyle(QFrame.Shape.Box)
-        self.setAcceptDrops(True)
+        
+        # 出力エリアの場合のみドロップを受け入れ（順序変更用）
+        # 入力エリアの場合はドロップを受け入れない（ファイルドロップと競合回避）
+        if self.is_output:
+            self.setAcceptDrops(True)
+        else:
+            self.setAcceptDrops(False)
         
         # ツールチップ設定
         self._setup_tooltip()
@@ -186,9 +192,11 @@ class PageThumbnailWidget(QLabel):
             # ドラッグ実行
             drop_action = drag.exec(Qt.DropAction.CopyAction | Qt.DropAction.MoveAction)
             
+            # 出力エリアからの移動の場合の処理
             if drop_action == Qt.DropAction.MoveAction and self.is_output:
-                # 出力エリアからの移動の場合は削除
-                self.removal_requested.emit(self.page_info)
+                # ドラッグ削除機能を無効化 - 並び替え専用に変更
+                # 削除は右クリックメニューからのみ実行可能
+                self.logger.debug(f"Page {self.page_info.page_number + 1} drag completed - reordering only, no removal")
                 
         except Exception as e:
             self.logger.error(f"Failed to start drag: {e}")
@@ -224,14 +232,31 @@ class PageThumbnailWidget(QLabel):
     
     def dragEnterEvent(self, event: QtGui.QDragEnterEvent):
         """ドラッグエンター"""
+        # ページ間のドラッグ&ドロップの場合
         if event.mimeData().hasText() and event.mimeData().text().startswith("page:"):
             event.acceptProposedAction()
+            return
+        
+        # 外部ファイルのドラッグの場合は親ウィンドウに委譲
+        if event.mimeData().hasUrls():
+            # 親ウィンドウのMainWindowにイベントを伝播させる
+            event.ignore()
+            return
+        
+        # その他の場合は無視
+        event.ignore()
     
     def dropEvent(self, event: QtGui.QDropEvent):
         """ドロップ"""
-        if self.is_output:
-            # 出力エリアでの並び替え処理
-            event.acceptProposedAction()
+        # ページ間のドロッグ&ドロップの場合のみ処理
+        if event.mimeData().hasText() and event.mimeData().text().startswith("page:"):
+            if self.is_output:
+                # 出力エリアでの並び替え処理
+                event.acceptProposedAction()
+                return
+        
+        # 外部ファイルのドロップは親ウィンドウに委譲
+        event.ignore()
 
 
 class OutputArea(QWidget):
@@ -258,7 +283,9 @@ class OutputArea(QWidget):
         """UI設定"""
         self.layout = QtWidgets.QGridLayout(self)
         self.layout.setSpacing(10)
+        # ドロップ受け入れ設定（ページドロップのみ、外部ファイルはメインウィンドウで処理）
         self.setAcceptDrops(True)
+        self.logger.debug("OutputArea drop acceptance enabled (pages only)")
         
         # 空の状態メッセージ
         self.empty_label = QLabel("ページをここにドラッグしてください")
@@ -368,8 +395,19 @@ class OutputArea(QWidget):
     
     def dragEnterEvent(self, event: QtGui.QDragEnterEvent):
         """ドラッグエンター"""
+        # ページ間のドラッグ&ドロップの場合
         if event.mimeData().hasText() and event.mimeData().text().startswith("page:"):
             event.acceptProposedAction()
+            return
+        
+        # 外部ファイルのドラッグの場合は親ウィンドウに委譲
+        if event.mimeData().hasUrls():
+            # 親ウィンドウのMainWindowにイベントを伝播させる
+            event.ignore()
+            return
+        
+        # その他の場合は無視
+        event.ignore()
     
     def dragMoveEvent(self, event: QtGui.QDragMoveEvent):
         """ドラッグ移動"""
@@ -377,53 +415,100 @@ class OutputArea(QWidget):
     
     def dropEvent(self, event: QtGui.QDropEvent):
         """ドロップ"""
-        drag_data = event.mimeData().text()
-        if drag_data.startswith("page:"):
-            try:
-                # ドラッグデータを解析
-                parts = drag_data.split(":")
-                source_file = parts[1]
-                page_number = int(parts[2])
-                rotation = int(parts[3]) if len(parts) > 3 else 0
-                
-                # ページ情報を作成
-                page_info = PDFPageInfo(source_file, page_number, rotation)
-                
-                # ドロップ位置を計算
-                drop_position = event.position().toPoint()
-                insert_index = self._calculate_insert_position(drop_position)
-                
-                # メインウィンドウからサムネイルパスを取得
-                thumbnail_path = None
-                if self.get_thumbnail_path:
-                    thumbnail_path = self.get_thumbnail_path(page_info)
-                
-                # サムネイルパスが取得できない場合のフォールバック
-                if not thumbnail_path:
-                    import tempfile
-                    import os
-                    from pathlib import Path
+        # ページ間のドラッグ&ドロップの場合のみ処理
+        if event.mimeData().hasText():
+            drag_data = event.mimeData().text()
+            if drag_data.startswith("page:"):
+                try:
+                    # ドラッグデータを解析
+                    parts = drag_data.split(":")
+                    source_file = parts[1]
+                    page_number = int(parts[2])
+                    rotation = int(parts[3]) if len(parts) > 3 else 0
                     
-                    thumbnail_filename = f"thumb_{Path(source_file).stem}_p{page_number + 1}.png"
-                    # 一時ディレクトリを検索
-                    for temp_dir in [tempfile.gettempdir(), "/tmp"]:
-                        potential_path = os.path.join(temp_dir, thumbnail_filename)
-                        if os.path.exists(potential_path):
-                            thumbnail_path = potential_path
+                    # ページ情報を作成
+                    page_info = PDFPageInfo(source_file, page_number, rotation)
+                    
+                    # ドロップ位置を計算
+                    drop_position = event.position().toPoint()
+                    insert_index = self._calculate_insert_position(drop_position)
+                    
+                    # 既存ページの並び替えかどうかを確認
+                    existing_index = -1
+                    for i, existing_page in enumerate(self.pages):
+                        if (existing_page.source_file == page_info.source_file and 
+                            existing_page.page_number == page_info.page_number and
+                            existing_page.rotation == page_info.rotation):
+                            existing_index = i
                             break
                     
-                    # まだ見つからない場合は警告
-                    if not thumbnail_path:
-                        self.logger.warning(f"Thumbnail not found for {page_info}")
-                        thumbnail_path = ""  # 空のパスで作成
-                
-                # ページを挿入
-                self.insert_page(insert_index, page_info, thumbnail_path)
-                
-                event.acceptProposedAction()
-                
-            except Exception as e:
-                self.logger.error(f"Failed to process drop: {e}")
+                    if existing_index >= 0:
+                        # 既存ページの並び替え
+                        self.logger.debug(f"Reordering page from index {existing_index} to {insert_index}")
+                        
+                        # インデックス調整（移動後の位置を正確に計算）
+                        if existing_index < insert_index:
+                            insert_index -= 1
+                        
+                        # 同じ位置への移動は無視
+                        if existing_index == insert_index:
+                            event.acceptProposedAction()
+                            return
+                        
+                        # ページとウィジェットを移動
+                        moved_page = self.pages.pop(existing_index)
+                        moved_widget = self.page_widgets.pop(existing_index)
+                        
+                        self.pages.insert(insert_index, moved_page)
+                        self.page_widgets.insert(insert_index, moved_widget)
+                        
+                        # レイアウト更新
+                        self._update_layout()
+                        
+                        # ページ順序変更シグナルを発行
+                        self.page_order_changed.emit(self.pages)
+                        
+                        self.logger.info(f"Page reordered: {page_info} moved to position {insert_index + 1}")
+                        
+                    else:
+                        # 新しいページの挿入
+                        # メインウィンドウからサムネイルパスを取得
+                        thumbnail_path = None
+                        if self.get_thumbnail_path:
+                            thumbnail_path = self.get_thumbnail_path(page_info)
+                        
+                        # サムネイルパスが取得できない場合のフォールバック
+                        if not thumbnail_path:
+                            import tempfile
+                            import os
+                            from pathlib import Path
+                            
+                            thumbnail_filename = f"thumb_{Path(source_file).stem}_p{page_number + 1}.png"
+                            # 一時ディレクトリを検索
+                            for temp_dir in [tempfile.gettempdir(), "/tmp"]:
+                                potential_path = os.path.join(temp_dir, thumbnail_filename)
+                                if os.path.exists(potential_path):
+                                    thumbnail_path = potential_path
+                                    break
+                            
+                            # まだ見つからない場合は警告
+                            if not thumbnail_path:
+                                self.logger.warning(f"Thumbnail not found for {page_info}")
+                                thumbnail_path = ""  # 空のパスで作成
+                        
+                        # ページを挿入
+                        self.insert_page(insert_index, page_info, thumbnail_path)
+                    
+                    event.acceptProposedAction()
+                    return
+                    
+                except Exception as e:
+                    self.logger.error(f"Failed to process drop: {e}")
+                    event.ignore()
+                    return
+        
+        # 外部ファイルのドロップは親ウィンドウに委譲
+        event.ignore()
     
     def _calculate_insert_position(self, drop_position: QPoint) -> int:
         """ドロップ位置から挿入インデックスを計算"""
