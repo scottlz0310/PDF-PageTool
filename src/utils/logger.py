@@ -6,15 +6,20 @@ PDF-PageTool Logger Module
 """
 
 import logging
-import colorlog
 import os
 from datetime import datetime
 from pathlib import Path
 
+try:
+    import colorlog
+    HAS_COLORLOG = True
+except ImportError:
+    HAS_COLORLOG = False
+
 
 class PDFPageToolLogger:
     """PDF-PageTool専用ロガークラス"""
-    
+
     def __init__(self, name: str = "PDF-PageTool", log_level: str = "WARNING"):
         """
         ロガーを初期化します
@@ -27,12 +32,12 @@ class PDFPageToolLogger:
         self.logger = logging.getLogger(name)
         self.log_level = log_level.upper()
         self._setup_logger()
-        
+
     def _setup_logger(self):
         """ロガーの設定を行います"""
         # 既存のハンドラーをクリア
         self.logger.handlers.clear()
-        
+
         # ログレベルの設定
         if self.log_level == "VERBOSE":
             level = logging.DEBUG
@@ -46,30 +51,37 @@ class PDFPageToolLogger:
             level = logging.ERROR
         else:
             level = logging.INFO
-            
+
         self.logger.setLevel(level)
-        
+
         # コンソールハンドラーの設定（カラーログ対応）
-        console_handler = colorlog.StreamHandler()
-        console_format = colorlog.ColoredFormatter(
-            '%(log_color)s%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S',
-            log_colors={
-                'DEBUG': 'cyan',
-                'INFO': 'green',
-                'WARNING': 'yellow',
-                'ERROR': 'red',
-                'CRITICAL': 'red,bg_white',
-            }
-        )
+        if HAS_COLORLOG:
+            console_handler = colorlog.StreamHandler()
+            console_format = colorlog.ColoredFormatter(
+                '%(log_color)s%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                datefmt='%Y-%m-%d %H:%M:%S',
+                log_colors={
+                    'DEBUG': 'cyan',
+                    'INFO': 'green',
+                    'WARNING': 'yellow',
+                    'ERROR': 'red',
+                    'CRITICAL': 'red,bg_white',
+                }
+            )
+        else:
+            console_handler = logging.StreamHandler()
+            console_format = logging.Formatter(
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                datefmt='%Y-%m-%d %H:%M:%S'
+            )
         console_handler.setFormatter(console_format)
         self.logger.addHandler(console_handler)
-        
+
         # ファイルハンドラーの設定（デバッグモード時のみ）
         if self.log_level in ["DEBUG", "VERBOSE"]:
             log_dir = Path(__file__).parent.parent.parent / "debug"
             log_dir.mkdir(exist_ok=True)
-            
+
             log_file = log_dir / f"pdf_pagetool_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
             file_handler = logging.FileHandler(log_file, encoding='utf-8')
             file_format = logging.Formatter(
@@ -78,27 +90,27 @@ class PDFPageToolLogger:
             )
             file_handler.setFormatter(file_format)
             self.logger.addHandler(file_handler)
-    
+
     def debug(self, message: str):
         """デバッグメッセージをログ出力"""
         self.logger.debug(message)
-    
+
     def verbose(self, message: str):
         """詳細メッセージをログ出力（DEBUGレベルとして扱う）"""
         self.logger.debug(f"[VERBOSE] {message}")
-    
+
     def info(self, message: str):
         """情報メッセージをログ出力"""
         self.logger.info(message)
-    
+
     def warning(self, message: str):
         """警告メッセージをログ出力"""
         self.logger.warning(message)
-    
+
     def error(self, message: str):
         """エラーメッセージをログ出力"""
         self.logger.error(message)
-    
+
     def critical(self, message: str):
         """重大なエラーメッセージをログ出力"""
         self.logger.critical(message)
@@ -117,7 +129,7 @@ def get_logger(name: str = "PDF-PageTool", log_level: str | None = None) -> PDFP
     """
     if log_level is None:
         log_level = os.getenv("LOG_LEVEL", "WARNING")  # デフォルトをWARNINGに変更
-    
+
     return PDFPageToolLogger(name, log_level)
 
 
@@ -125,7 +137,7 @@ def get_logger(name: str = "PDF-PageTool", log_level: str | None = None) -> PDFP
 if __name__ == "__main__":
     # テスト用
     logger = get_logger(log_level="DEBUG")
-    
+
     logger.info("PDF-PageTool Logger initialized")
     logger.debug("This is a debug message")
     logger.verbose("This is a verbose message")

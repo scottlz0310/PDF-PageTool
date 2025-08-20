@@ -3,15 +3,21 @@
 PyPIパッケージ (qt-theme-manager) を使用したテーマ管理システム
 """
 
-import os
 import json
-from typing import Dict, Optional
+import os
 from pathlib import Path
-from PyQt6.QtWidgets import QApplication, QWidget
+from typing import Dict, Optional
+
 from PyQt6.QtCore import QObject, pyqtSignal
+from PyQt6.QtWidgets import QApplication, QWidget
 
 # PyPIパッケージのテーママネージャーをインポート
-from theme_manager import ThemeController, StylesheetGenerator
+try:
+    from qt_theme_manager import StylesheetGenerator, ThemeController
+except ImportError:
+    # フォールバック: 基本的なテーマ管理
+    ThemeController = None
+    StylesheetGenerator = None
 
 from src.utils.logger import get_logger
 from src.utils.settings_manager import SettingsManager
@@ -21,36 +27,40 @@ logger = get_logger(__name__)
 
 class PDFPageToolThemeManager(QObject):
     """PDF-PageTool専用テーママネージャー（PyPIパッケージベース）"""
-    
+
     # シグナル定義
     theme_changed = pyqtSignal(str)  # テーマ変更シグナル
-    
+
     def __init__(self, settings_manager: SettingsManager):
         super().__init__()
         self.settings_manager = settings_manager
-        
+
         # テーマ設定ファイルパス
         self.theme_config_path = self._get_theme_config_path()
-        
+
         # PyPIパッケージのThemeControllerを初期化
-        self.theme_controller = ThemeController(self.theme_config_path)
-        
+        if ThemeController is not None:
+            self.theme_controller = ThemeController(self.theme_config_path)
+        else:
+            self.theme_controller = None
+            logger.warning("qt-theme-manager not available, using fallback theme system")
+
         # 設定マネージャーとの連携
         self._current_theme = str(self.settings_manager.get('theme', 'light'))
-        
+
         # テーマ設定ファイルを初期化
         self._initialize_theme_config()
-        
+
         # 初期テーマを適用
         self._apply_initial_theme()
-        
+
         logger.info(f"PDFPageToolThemeManager initialized with theme: {self._current_theme}")
-    
+
     def _get_theme_config_path(self) -> str:
         """テーマ設定ファイルのパスを取得"""
         current_dir = Path(__file__).parent
         return str(current_dir / "pdf_pagetool_themes.json")
-    
+
     def _initialize_theme_config(self):
         """テーマ設定ファイルを初期化"""
         if not os.path.exists(self.theme_config_path):
@@ -271,89 +281,97 @@ class PDFPageToolThemeManager(QObject):
                     }
                 }
             }
-            
+
             try:
                 with open(self.theme_config_path, 'w', encoding='utf-8') as f:
                     json.dump(default_config, f, indent=2, ensure_ascii=False)
                 logger.info(f"Default theme config created: {self.theme_config_path}")
             except Exception as e:
                 logger.error(f"Failed to create theme config: {e}")
-    
+
     def _apply_initial_theme(self):
         """初期テーマを適用"""
         if self._current_theme:
             self.set_theme(self._current_theme)
-    
+
     def get_available_themes(self) -> Dict[str, str]:
         """利用可能なテーマのリストを取得"""
         try:
-            themes = self.theme_controller.get_available_themes()
-            return {name: config.get('display_name', name) for name, config in themes.items()}
+            if self.theme_controller:
+                themes = self.theme_controller.get_available_themes()
+                return {name: config.get('display_name', name) for name, config in themes.items()}
         except Exception as e:
             logger.error(f"Failed to get available themes: {e}")
-            return {"light": "ライト", "dark": "ダーク"}
-    
+        return {"light": "ライト", "dark": "ダーク"}
+
     def get_current_theme(self) -> str:
         """現在のテーマ名を取得"""
         return self._current_theme
-    
+
     def set_theme(self, theme_name: str) -> bool:
         """テーマを設定"""
         try:
             # PyPIパッケージのThemeControllerでテーマを設定
-            if self.theme_controller.set_theme(theme_name, save_settings=True):
+            if self.theme_controller and self.theme_controller.set_theme(theme_name, save_settings=True):
                 old_theme = self._current_theme
                 self._current_theme = theme_name
-                
+
                 # 設定マネージャーにも保存
                 self.settings_manager.set('theme', theme_name)
-                
+
                 # アプリケーションにテーマを適用
                 self.apply_theme_to_application()
-                
+
                 # シグナルを発行
                 self.theme_changed.emit(theme_name)
-                
+
                 logger.info(f"Theme changed from '{old_theme}' to '{theme_name}'")
                 return True
             else:
-                logger.error(f"Failed to set theme: {theme_name}")
-                return False
-                
+                # フォールバック: 基本的なテーマ設定
+                old_theme = self._current_theme
+                self._current_theme = theme_name
+                self.settings_manager.set('theme', theme_name)
+                self.theme_changed.emit(theme_name)
+                logger.info(f"Theme changed (fallback) from '{old_theme}' to '{theme_name}'")
+                return True
+
         except Exception as e:
             logger.error(f"Error setting theme '{theme_name}': {e}")
             return False
-    
+
     def preview_theme(self, theme_name: str) -> bool:
         """一時的にテーマをプレビュー（設定には保存しない）"""
         try:
             # 現在のテーマを保存
             old_theme = self._current_theme
-            
+
             # 一時的にテーマを変更
             self._current_theme = theme_name
-            
+
             # PyPIパッケージのThemeControllerで一時的にテーマを設定（保存しない）
-            if self.theme_controller.set_theme(theme_name, save_settings=False):
+            if self.theme_controller and self.theme_controller.set_theme(theme_name, save_settings=False):
                 # アプリケーションにテーマを適用（失敗してもプレビューは成功とする）
                 self.apply_theme_to_application()
                 logger.debug(f"Theme previewed: {theme_name}")
                 return True
             else:
-                # テーマ設定失敗の場合は元のテーマに戻す
-                self._current_theme = old_theme
-                return False
-                
+                # フォールバックまたはテーマ設定失敗の場合
+                self.apply_theme_to_application()
+                logger.debug(f"Theme previewed (fallback): {theme_name}")
+                return True
+
         except Exception as e:
             logger.error(f"Error previewing theme '{theme_name}': {e}")
             # エラーが発生した場合は元のテーマに戻す
             try:
                 self._current_theme = old_theme
-                self.theme_controller.set_theme(old_theme, save_settings=False)
+                if self.theme_controller:
+                    self.theme_controller.set_theme(old_theme, save_settings=False)
             except:
                 pass
             return False
-    
+
     def apply_theme_to_application(self, app: Optional[QApplication] = None) -> bool:
         """アプリケーション全体にテーマを適用"""
         try:
@@ -362,55 +380,124 @@ class PDFPageToolThemeManager(QObject):
                 if app_instance is not None and isinstance(app_instance, QApplication):
                     app = app_instance
             if app is not None:
-                stylesheet = self.theme_controller.get_current_stylesheet()
-                app.setStyleSheet(stylesheet)
+                if self.theme_controller:
+                    stylesheet = self.theme_controller.get_current_stylesheet()
+                    app.setStyleSheet(stylesheet)
+                else:
+                    # フォールバック: 基本的なスタイルシート
+                    app.setStyleSheet(self._get_fallback_stylesheet())
                 return True
             return False
         except Exception as e:
             logger.error(f"Failed to apply theme to application: {e}")
             return False
-    
+
     def apply_theme_to_widget(self, widget: QWidget) -> bool:
         """特定のウィジェットにテーマを適用"""
         try:
-            stylesheet = self.theme_controller.get_current_stylesheet()
+            if self.theme_controller:
+                stylesheet = self.theme_controller.get_current_stylesheet()
+            else:
+                stylesheet = self._get_fallback_stylesheet()
             widget.setStyleSheet(stylesheet)
             return True
         except Exception as e:
             logger.error(f"Failed to apply theme to widget: {e}")
             return False
-    
+
     def get_theme_stylesheet(self, theme_name: Optional[str] = None) -> str:
         """テーマのスタイルシートを取得"""
         try:
-            if theme_name and theme_name != self._current_theme:
-                # 一時的に指定テーマのスタイルシートを取得
-                theme_config = self.theme_controller.loader.get_theme_config(theme_name)
-                if theme_config:
-                    generator = StylesheetGenerator(theme_config)
-                    return generator.generate_qss()
-            
-            # 現在のテーマのスタイルシートを取得
-            return self.theme_controller.get_current_stylesheet()
+            if self.theme_controller:
+                if theme_name and theme_name != self._current_theme:
+                    # 一時的に指定テーマのスタイルシートを取得
+                    theme_config = self.theme_controller.loader.get_theme_config(theme_name)
+                    if theme_config and StylesheetGenerator:
+                        generator = StylesheetGenerator(theme_config)
+                        return generator.generate_qss()
+
+                # 現在のテーマのスタイルシートを取得
+                return self.theme_controller.get_current_stylesheet()
+            else:
+                return self._get_fallback_stylesheet()
         except Exception as e:
             logger.error(f"Failed to get theme stylesheet: {e}")
-            return ""
-    
+            return self._get_fallback_stylesheet()
+
     def export_theme_qss(self, output_path: str, theme_name: Optional[str] = None) -> bool:
         """テーマのQSSファイルをエクスポート"""
         try:
-            return self.theme_controller.export_qss(output_path, theme_name)
+            if self.theme_controller:
+                return self.theme_controller.export_qss(output_path, theme_name)
+            else:
+                # フォールバック: 基本スタイルシートをエクスポート
+                with open(output_path, 'w', encoding='utf-8') as f:
+                    f.write(self._get_fallback_stylesheet())
+                return True
         except Exception as e:
             logger.error(f"Failed to export theme QSS: {e}")
             return False
-    
+
     def reload_themes(self) -> bool:
         """テーマ設定を再読み込み"""
         try:
-            return self.theme_controller.reload_themes()
+            if self.theme_controller:
+                return self.theme_controller.reload_themes()
+            return True
         except Exception as e:
             logger.error(f"Failed to reload themes: {e}")
             return False
+
+    def _get_fallback_stylesheet(self) -> str:
+        """フォールバック用の基本スタイルシートを取得"""
+        if self._current_theme == 'dark':
+            return """
+                QWidget {
+                    background-color: #2b2b2b;
+                    color: #ffffff;
+                }
+                QMenuBar {
+                    background-color: #3c3c3c;
+                    color: #ffffff;
+                }
+                QMenuBar::item:selected {
+                    background-color: #0078d4;
+                }
+                QPushButton {
+                    background-color: #404040;
+                    border: 1px solid #555555;
+                    padding: 5px;
+                    color: #ffffff;
+                }
+                QPushButton:hover {
+                    background-color: #0078d4;
+                }
+            """
+        else:
+            return """
+                QWidget {
+                    background-color: #ffffff;
+                    color: #000000;
+                }
+                QMenuBar {
+                    background-color: #f8f9fa;
+                    color: #212529;
+                }
+                QMenuBar::item:selected {
+                    background-color: #007acc;
+                    color: #ffffff;
+                }
+                QPushButton {
+                    background-color: #e9ecef;
+                    border: 1px solid #ced4da;
+                    padding: 5px;
+                    color: #212529;
+                }
+                QPushButton:hover {
+                    background-color: #007acc;
+                    color: #ffffff;
+                }
+            """
 
 
 # シングルトンインスタンス
@@ -420,12 +507,12 @@ _theme_manager_instance: Optional[PDFPageToolThemeManager] = None
 def get_integrated_theme_manager(settings_manager: Optional[SettingsManager] = None) -> PDFPageToolThemeManager:
     """統合テーママネージャーのシングルトンインスタンスを取得"""
     global _theme_manager_instance
-    
+
     if _theme_manager_instance is None:
         if settings_manager is None:
             settings_manager = SettingsManager()
         _theme_manager_instance = PDFPageToolThemeManager(settings_manager)
-    
+
     return _theme_manager_instance
 
 
@@ -446,7 +533,7 @@ def apply_theme_to_widget_simple(widget: QWidget, theme_name: Optional[str] = No
     except Exception as e:
         logger.error(f"Failed to apply theme to widget: {e}")
         return False
-    
+
     return False
 
 
