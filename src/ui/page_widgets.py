@@ -32,7 +32,11 @@ class PageThumbnailWidget(QLabel):
     removal_requested = pyqtSignal(object)  # PDFPageInfo
 
     def __init__(
-        self, page_info: PDFPageInfo, thumbnail_path: str, is_output: bool = False, parent: QWidget | None = None
+        self,
+        page_info: PDFPageInfo,
+        thumbnail_path: str,
+        is_output: bool = False,
+        parent: QWidget | None = None,
     ):
         super().__init__(parent)
 
@@ -113,7 +117,10 @@ class PageThumbnailWidget(QLabel):
 
             # サイズ調整
             scaled_pixmap = pixmap.scaled(
-                140, 180, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation
+                140,
+                180,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation,
             )
 
             # ページ番号をオーバーレイ

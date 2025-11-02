@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 PDF-PageTool 機能テストスクリプト
 

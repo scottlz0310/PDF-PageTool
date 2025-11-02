@@ -203,7 +203,7 @@ class SettingsDialog(QDialog):
         # Waylandドラッグ&ドロップ問題の回避策
         self.show_file_selection_button_check = QCheckBox("ファイル選択ボタンを表示（ドラッグ&ドロップ代替手段）")
         self.show_file_selection_button_check.setToolTip(
-            "Wayland環境でドラッグ&ドロップが機能しない場合の代替手段として、\nファイル選択ボタンを表示します"
+            "Wayland環境でドラッグ&ドロップが機能しない場合の代替手段として、\nファイル選択ボタンを表示します",
         )
         display_layout.addWidget(self.show_file_selection_button_check)
 

@@ -335,7 +335,7 @@ class PDFPageToolThemeManager(QObject):
                 self._current_theme = old_theme
                 if self.theme_controller:
                     self.theme_controller.set_theme(old_theme, save_settings=False)
-            except Exception:  # noqa: S110
+            except Exception:  # nosec B110
                 pass
             return False
 

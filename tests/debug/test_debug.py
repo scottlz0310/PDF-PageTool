@@ -133,6 +133,7 @@ def test_theme_system():
 
     try:
         from src.ui.theme_manager import ThemeManager
+
         from src.utils.settings_manager import SettingsManager
 
         settings = SettingsManager()

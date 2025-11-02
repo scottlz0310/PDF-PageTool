@@ -191,7 +191,10 @@ class ProgressManager:
         self.logger = get_logger("ProgressManager")
 
     def start_progress(
-        self, title: str = "処理中...", cancelable: bool = True, auto_close: bool = True
+        self,
+        title: str = "処理中...",
+        cancelable: bool = True,
+        auto_close: bool = True,
     ) -> ProgressDialog:
         """プログレス表示開始"""
         if self.dialog:

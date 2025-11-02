@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt
 
@@ -79,7 +77,7 @@ class ThumbnailSizeDialog(QtWidgets.QDialog):
 
         # OK/Cancelボタン
         self.button_box = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel,
         )
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)

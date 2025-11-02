@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 PDF-PageTool 新機能テストスクリプト
 
@@ -148,6 +147,7 @@ def test_theme_system():
 
     try:
         from src.ui.theme_manager import ThemeManager
+
         from src.utils.settings_manager import SettingsManager
 
         settings = SettingsManager(app_name="PDF-PageTool-Test")
