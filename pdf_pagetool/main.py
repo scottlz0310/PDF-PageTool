@@ -11,8 +11,8 @@ import os
 import sys
 from pathlib import Path
 
-from src.pdf_operations import PDFOperations
-from src.utils.logger import get_logger
+from pdf_pagetool.pdf_operations import PDFOperations
+from pdf_pagetool.utils.logger import get_logger
 
 # プロジェクトルートのパスを取得
 project_root = Path(__file__).parent.parent
@@ -132,7 +132,7 @@ def main() -> int:
         from PyQt6.QtGui import QIcon
         from PyQt6.QtWidgets import QApplication
 
-        from src.ui import create_main_window
+        from pdf_pagetool.ui import create_main_window
 
         app = QApplication(sys.argv)
         app.setApplicationName("PDF-PageTool")

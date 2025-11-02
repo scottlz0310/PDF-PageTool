@@ -18,8 +18,8 @@ except ImportError:
     ThemeController = None
     StylesheetGenerator = None
 
-from src.utils.logger import get_logger
-from src.utils.settings_manager import SettingsManager
+from pdf_pagetool.utils.logger import get_logger
+from pdf_pagetool.utils.settings_manager import SettingsManager
 
 logger = get_logger(__name__)
 

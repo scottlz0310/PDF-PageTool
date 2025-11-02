@@ -10,8 +10,8 @@ from pathlib import Path
 # プロジェクトルートをパスに追加
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from src.utils.logger import get_logger
-from src.utils.settings_manager import SettingsManager
+from pdf_pagetool.utils.logger import get_logger
+from pdf_pagetool.utils.settings_manager import SettingsManager
 
 
 def test_settings_manager() -> None:
@@ -146,9 +146,9 @@ def test_theme_system() -> bool:
     print("\n=== テーマシステムテスト ===")
 
     try:
-        from src.ui.theme_manager import ThemeManager
+        from pdf_pagetool.ui.theme_manager import ThemeManager
 
-        from src.utils.settings_manager import SettingsManager
+        from pdf_pagetool.utils.settings_manager import SettingsManager
 
         settings = SettingsManager(app_name="PDF-PageTool-Test")
         theme_manager = ThemeManager(settings)
@@ -179,8 +179,8 @@ def test_shortcut_system() -> bool:
     try:
         from PyQt6.QtWidgets import QApplication, QMainWindow
 
-        from src.ui.keyboard_shortcuts import ShortcutManager
-        from src.utils.settings_manager import SettingsManager
+        from pdf_pagetool.ui.keyboard_shortcuts import ShortcutManager
+        from pdf_pagetool.utils.settings_manager import SettingsManager
 
         # 最小限のアプリケーション作成
         app = QApplication.instance()

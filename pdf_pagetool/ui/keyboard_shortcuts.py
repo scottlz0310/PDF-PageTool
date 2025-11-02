@@ -9,8 +9,8 @@ from PyQt6.QtCore import QObject, pyqtSignal
 from PyQt6.QtGui import QKeySequence, QShortcut
 from PyQt6.QtWidgets import QMainWindow
 
-from src.utils.logger import get_logger
-from src.utils.settings_manager import SettingsManager
+from pdf_pagetool.utils.logger import get_logger
+from pdf_pagetool.utils.settings_manager import SettingsManager
 
 logger = get_logger(__name__)
 

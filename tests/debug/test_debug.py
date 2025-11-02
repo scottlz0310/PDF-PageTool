@@ -20,8 +20,8 @@ def test_settings_dialog():
     try:
         from PyQt6.QtWidgets import QApplication
 
-        from src.ui.settings_dialog import SettingsDialog
-        from src.utils.settings_manager import SettingsManager
+        from pdf_pagetool.ui.settings_dialog import SettingsDialog
+        from pdf_pagetool.utils.settings_manager import SettingsManager
 
         app = QApplication.instance()
         if app is None:
@@ -54,7 +54,7 @@ def test_main_window():
     try:
         from PyQt6.QtWidgets import QApplication
 
-        from src.ui.main_window import MainWindow
+        from pdf_pagetool.ui.main_window import MainWindow
 
         app = QApplication.instance()
         if app is None:
@@ -101,8 +101,8 @@ def test_log_level():
     print("\n=== ログレベルテスト ===")
 
     try:
-        from src.utils.logger import get_logger
-        from src.utils.settings_manager import SettingsManager
+        from pdf_pagetool.utils.logger import get_logger
+        from pdf_pagetool.utils.settings_manager import SettingsManager
 
         settings = SettingsManager()
         default_log_level = settings.get("log_level")
@@ -132,9 +132,9 @@ def test_theme_system():
     print("\n=== テーマシステムテスト ===")
 
     try:
-        from src.ui.theme_manager import ThemeManager
+        from pdf_pagetool.ui.theme_manager import ThemeManager
 
-        from src.utils.settings_manager import SettingsManager
+        from pdf_pagetool.utils.settings_manager import SettingsManager
 
         settings = SettingsManager()
         theme_manager = ThemeManager(settings)

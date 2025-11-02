@@ -8,8 +8,8 @@ import os
 import sys
 from pathlib import Path
 
-from src.pdf_operations import PDFOperations
-from src.utils.logger import get_logger
+from pdf_pagetool.pdf_operations import PDFOperations
+from pdf_pagetool.utils.logger import get_logger
 
 # プロジェクトルートをPythonパスに追加
 project_root = Path(__file__).parent.parent.parent
