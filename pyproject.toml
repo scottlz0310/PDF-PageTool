@@ -80,3 +80,9 @@ continue_on_error = false
 [tool.setuptools.packages.find]
 where = [ ".",]
 include = [ "src*",]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "pytest-cov>=6.3.0",
+]
