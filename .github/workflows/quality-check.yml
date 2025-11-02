@@ -76,9 +76,9 @@ jobs:
             PACKAGE_NAME=$(uv run python -c "import tomllib; f=open('pyproject.toml','rb'); data=tomllib.load(f); name=data.get('project',{}).get('name',''); print(name.replace('-','_') if name else 'src')" 2>/dev/null || echo "src")
             # Run tests with detected package
             if [ -d "tests" ]; then
-              uv run pytest tests/ --cov="pdf_pagetool" --cov-report=xml --cov-report=term-missing
+              uv run pytest tests/ --cov="src" --cov-report=xml --cov-report=term-missing
             else
-              uv run pytest --cov="pdf_pagetool" --cov-report=xml --cov-report=term-missing
+              uv run pytest --cov="src" --cov-report=xml --cov-report=term-missing
             fi
           else
             # Fallback for projects without pyproject.toml

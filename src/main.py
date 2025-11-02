@@ -11,12 +11,11 @@ import os
 import sys
 from pathlib import Path
 
-# プロジェクトルートをPythonパスに追加
-project_root = Path(__file__).parent
-sys.path.insert(0, str(project_root))
-
 from src.pdf_operations import PDFOperations
 from src.utils.logger import get_logger
+
+# プロジェクトルートのパスを取得
+project_root = Path(__file__).parent.parent
 
 
 def parse_arguments():
