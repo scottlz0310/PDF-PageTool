@@ -49,7 +49,7 @@ class PageThumbnailWidget(QLabel):
         self._setup_widget()
         self._load_thumbnail()
 
-    def _setup_widget(self):
+    def _setup_widget(self) -> None:
         """ウィジェットの基本設定"""
         self.setFixedSize(160, 220)
         self.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -68,7 +68,7 @@ class PageThumbnailWidget(QLabel):
         # スタイル設定
         self._update_style()
 
-    def _setup_tooltip(self):
+    def _setup_tooltip(self) -> None:
         """ツールチップを設定"""
         try:
             file_name = os.path.basename(self.page_info.source_file)
@@ -81,7 +81,7 @@ class PageThumbnailWidget(QLabel):
             self.logger.error(f"Failed to setup tooltip: {e}")
             self.setToolTip("PDF ページ")
 
-    def _update_style(self):
+    def _update_style(self) -> None:
         """ウィジェットのスタイルを更新"""
         if self.selected:
             border_color = "#0078d4"
@@ -104,7 +104,7 @@ class PageThumbnailWidget(QLabel):
             }}
         """)
 
-    def _load_thumbnail(self):
+    def _load_thumbnail(self) -> None:
         """サムネイル画像をロード"""
         try:
             pixmap = QPixmap(self.thumbnail_path)
@@ -145,12 +145,14 @@ class PageThumbnailWidget(QLabel):
             self.logger.error(f"Failed to load thumbnail: {e}")
             self.setText("エラー")
 
-    def set_selected(self, selected: bool):
+    def set_selected(self, selected: bool) -> None:
         """選択状態を設定"""
         self.selected = selected
         self._update_style()
 
-    def mousePressEvent(self, event: QtGui.QMouseEvent):
+    def mousePressEvent(self, event: QtGui.QMouseEvent | None) -> None:
+        if event is None:
+            return
         """マウスクリックイベント（複数選択対応）"""
         if event.button() == Qt.MouseButton.LeftButton:
             # 修飾キーに応じた選択処理
@@ -170,17 +172,21 @@ class PageThumbnailWidget(QLabel):
         elif event.button() == Qt.MouseButton.RightButton:
             self._show_context_menu(event.globalPosition().toPoint())
 
-    def mouseDoubleClickEvent(self, event: QtGui.QMouseEvent):
+    def mouseDoubleClickEvent(self, event: QtGui.QMouseEvent | None) -> None:
+        if event is None:
+            return
         """マウスダブルクリックイベント"""
         if event.button() == Qt.MouseButton.LeftButton:
             self.double_clicked.emit(self.page_info)
 
-    def mouseMoveEvent(self, event: QtGui.QMouseEvent):
+    def mouseMoveEvent(self, event: QtGui.QMouseEvent | None) -> None:
+        if event is None:
+            return
         """ドラッグ開始"""
         if event.buttons() == Qt.MouseButton.LeftButton:
             self._start_drag()
 
-    def _start_drag(self):
+    def _start_drag(self) -> None:
         """ドラッグ操作開始"""
         try:
             drag = QDrag(self)
@@ -210,9 +216,11 @@ class PageThumbnailWidget(QLabel):
         except Exception as e:
             self.logger.error(f"Failed to start drag: {e}")
 
-    def _show_context_menu(self, position: QPoint):
+    def _show_context_menu(self, position: QPoint) -> None:
         """右クリックコンテキストメニュー表示"""
         menu = QtWidgets.QMenu(self)
+        if menu is None:
+            return
 
         # 出力エリアの場合のみ回転メニューと削除メニューを表示
         # 入力エリアでは原稿ファイルを編集しない原則に従う
@@ -239,15 +247,21 @@ class PageThumbnailWidget(QLabel):
 
         menu.exec(position)
 
-    def dragEnterEvent(self, event: QtGui.QDragEnterEvent):
+    def dragEnterEvent(self, event: QtGui.QDragEnterEvent | None) -> None:
+        if event is None:
+            return
         """ドラッグエンター"""
         # ページ間のドラッグ&ドロップの場合
-        if event.mimeData().hasText() and event.mimeData().text().startswith("page:"):
+        if (
+            event.mimeData()
+            and event.mimeData().hasText()
+            and (event.mimeData().text() if event.mimeData() else "").startswith("page:")
+        ):
             event.acceptProposedAction()
             return
 
         # 外部ファイルのドラッグの場合は親ウィンドウに委譲
-        if event.mimeData().hasUrls():
+        if event.mimeData() and event.mimeData().hasUrls():
             # 親ウィンドウのMainWindowにイベントを伝播させる
             event.ignore()
             return
@@ -255,10 +269,16 @@ class PageThumbnailWidget(QLabel):
         # その他の場合は無視
         event.ignore()
 
-    def dropEvent(self, event: QtGui.QDropEvent):
+    def dropEvent(self, event: QtGui.QDropEvent | None) -> None:
+        if event is None:
+            return
         """ドロップ"""
         # ページ間のドロッグ&ドロップの場合のみ処理
-        if event.mimeData().hasText() and event.mimeData().text().startswith("page:"):
+        if (
+            event.mimeData()
+            and event.mimeData().hasText()
+            and (event.mimeData().text() if event.mimeData() else "").startswith("page:")
+        ):
             if self.is_output:
                 # 出力エリアでの並び替え処理
                 event.acceptProposedAction()
@@ -288,7 +308,7 @@ class OutputArea(QWidget):
 
         self._setup_ui()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         """UI設定"""
         self.layout = QtWidgets.QGridLayout(self)
         self.layout.setSpacing(10)
@@ -303,7 +323,7 @@ class OutputArea(QWidget):
         # スタイルはテーマシステムから自動適用されるよう削除
         self.layout.addWidget(self.empty_label, 0, 0)
 
-    def add_page(self, page_info: PDFPageInfo, thumbnail_path: str):
+    def add_page(self, page_info: PDFPageInfo, thumbnail_path: str) -> None:
         """ページを追加"""
         self.logger.debug(f"Adding page to output: {page_info}")
 
@@ -326,7 +346,7 @@ class OutputArea(QWidget):
 
         self.page_added.emit(page_info)
 
-    def remove_page(self, page_info: PDFPageInfo):
+    def remove_page(self, page_info: PDFPageInfo) -> None:
         """ページを削除"""
         try:
             index = self.pages.index(page_info)
@@ -348,7 +368,7 @@ class OutputArea(QWidget):
         except ValueError:
             self.logger.warning(f"Page not found for removal: {page_info}")
 
-    def _update_layout(self):
+    def _update_layout(self) -> None:
         """レイアウトを更新"""
         # 既存のウィジェットをレイアウトから削除
         for i in reversed(range(self.layout.count())):
@@ -367,7 +387,7 @@ class OutputArea(QWidget):
             col = i % cols
             self.layout.addWidget(widget, row, col)
 
-    def _get_current_thumbnail_size(self):
+    def _get_current_thumbnail_size(self) -> int:
         """現在のサムネイルサイズを取得"""
         if self.page_widgets:
             # 最初のウィジェットからサイズを取得
@@ -375,7 +395,7 @@ class OutputArea(QWidget):
             return first_widget.width()
         return 160  # デフォルトサイズ
 
-    def update_thumbnail_sizes(self, size: int):
+    def update_thumbnail_sizes(self, size: int) -> None:
         """サムネイルサイズを更新（外部から呼び出し可能）"""
         # 各ウィジェットのサイズを更新
         for widget in self.page_widgets:
@@ -384,7 +404,7 @@ class OutputArea(QWidget):
         # レイアウトを再計算
         self._update_layout()
 
-    def _on_rotation_requested(self, page_info: PDFPageInfo, angle: int):
+    def _on_rotation_requested(self, page_info: PDFPageInfo, angle: int) -> None:
         """回転要求処理"""
         # 現在の回転角度に追加
         new_rotation = (page_info.rotation + angle) % 360
@@ -398,19 +418,25 @@ class OutputArea(QWidget):
         except ValueError:
             pass
 
-    def _on_removal_requested(self, page_info: PDFPageInfo):
+    def _on_removal_requested(self, page_info: PDFPageInfo) -> None:
         """削除要求処理"""
         self.remove_page(page_info)
 
-    def dragEnterEvent(self, event: QtGui.QDragEnterEvent):
+    def dragEnterEvent(self, event: QtGui.QDragEnterEvent | None) -> None:
+        if event is None:
+            return
         """ドラッグエンター"""
         # ページ間のドラッグ&ドロップの場合
-        if event.mimeData().hasText() and event.mimeData().text().startswith("page:"):
+        if (
+            event.mimeData()
+            and event.mimeData().hasText()
+            and (event.mimeData().text() if event.mimeData() else "").startswith("page:")
+        ):
             event.acceptProposedAction()
             return
 
         # 外部ファイルのドラッグの場合は親ウィンドウに委譲
-        if event.mimeData().hasUrls():
+        if event.mimeData() and event.mimeData().hasUrls():
             # 親ウィンドウのMainWindowにイベントを伝播させる
             event.ignore()
             return
@@ -418,15 +444,19 @@ class OutputArea(QWidget):
         # その他の場合は無視
         event.ignore()
 
-    def dragMoveEvent(self, event: QtGui.QDragMoveEvent):
+    def dragMoveEvent(self, event: QtGui.QDragMoveEvent | None) -> None:
+        if event is None:
+            return
         """ドラッグ移動"""
         event.acceptProposedAction()
 
-    def dropEvent(self, event: QtGui.QDropEvent):
+    def dropEvent(self, event: QtGui.QDropEvent | None) -> None:
+        if event is None:
+            return
         """ドロップ"""
         # ページ間のドラッグ&ドロップの場合のみ処理
-        if event.mimeData().hasText():
-            drag_data = event.mimeData().text()
+        if event.mimeData() and event.mimeData().hasText():
+            drag_data = event.mimeData().text() if event.mimeData() else ""
             if drag_data.startswith("page:"):
                 try:
                     # ドラッグデータを解析
@@ -546,7 +576,7 @@ class OutputArea(QWidget):
 
         return min(closest_index, len(self.page_widgets))
 
-    def insert_page(self, index: int, page_info: PDFPageInfo, thumbnail_path: str):
+    def insert_page(self, index: int, page_info: PDFPageInfo, thumbnail_path: str) -> None:
         """指定位置にページを挿入"""
         self.logger.debug(f"Inserting page at index {index}: {page_info}")
 
@@ -580,7 +610,7 @@ class OutputArea(QWidget):
         self.page_order_changed.emit(self.pages)
         self.page_added.emit(page_info)
 
-    def resizeEvent(self, event):
+    def resizeEvent(self, event: QtGui.QResizeEvent | None) -> None:
         """リサイズイベント"""
         super().resizeEvent(event)
         self._update_layout()
@@ -589,7 +619,7 @@ class OutputArea(QWidget):
         """現在の出力ページリストを取得"""
         return self.pages.copy()
 
-    def clear(self):
+    def clear(self) -> None:
         """すべてのページをクリア"""
         for widget in self.page_widgets:
             widget.deleteLater()

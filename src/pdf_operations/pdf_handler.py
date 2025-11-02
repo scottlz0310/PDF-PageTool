@@ -6,6 +6,10 @@ PDFファイルの読み込み、ページ抽出、結合、回転などの基�
 
 import os
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    pass
 
 try:
     from PyPDF2 import PdfReader, PdfWriter
@@ -24,7 +28,7 @@ except ImportError:
 try:
     from PIL import Image
 except ImportError:
-    Image = None
+    Image = None  # type: ignore[assignment]
 import tempfile
 
 from ..utils.logger import get_logger
@@ -47,7 +51,7 @@ class PDFPageInfo:
         self.rotation = rotation
         self.thumbnail_path: str | None = None
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Page {self.page_number + 1} from {Path(self.source_file).name}"
 
 
@@ -62,7 +66,7 @@ class PDFOperations:
             log_level: ログレベル
         """
         self.logger = get_logger("PDFOperations", log_level)
-        self.temp_dir = None
+        self.temp_dir: str | None = None
 
         # 必要なライブラリのチェック
         if PdfReader is None:
@@ -77,7 +81,7 @@ class PDFOperations:
 
         self._create_temp_dir()
 
-    def _create_temp_dir(self):
+    def _create_temp_dir(self) -> None:
         """一時ディレクトリを作成"""
         try:
             self.temp_dir = tempfile.mkdtemp(prefix="pdf_pagetool_")
@@ -181,7 +185,7 @@ class PDFOperations:
             self.logger.error(f"Failed to generate thumbnail: {e}")
             raise
 
-    def rotate_page(self, page_info: PDFPageInfo, angle: int):
+    def rotate_page(self, page_info: PDFPageInfo, angle: int) -> None:
         """
         ページの回転角度を設定
 
@@ -198,7 +202,7 @@ class PDFOperations:
 
         self.logger.debug(f"Page rotation set to {angle} degrees for {page_info}")
 
-    def merge_pages(self, pages: list[PDFPageInfo], output_path: str):
+    def merge_pages(self, pages: list[PDFPageInfo], output_path: str) -> None:
         """
         指定されたページを結合してPDFファイルを作成
 
@@ -235,7 +239,7 @@ class PDFOperations:
             self.logger.error(f"Failed to merge PDF: {e}")
             raise
 
-    def cleanup(self):
+    def cleanup(self) -> None:
         """一時ファイルをクリーンアップ"""
         try:
             if self.temp_dir and os.path.exists(self.temp_dir):

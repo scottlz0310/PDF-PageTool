@@ -60,7 +60,7 @@ class PDFPageToolThemeManager(QObject):
         current_dir = Path(__file__).parent
         return str(current_dir / "pdf_pagetool_themes.json")
 
-    def _initialize_theme_config(self):
+    def _initialize_theme_config(self) -> None:
         """テーマ設定ファイルを初期化"""
         if not os.path.exists(self.theme_config_path):
             default_config = {
@@ -256,7 +256,7 @@ class PDFPageToolThemeManager(QObject):
             except Exception as e:
                 logger.error(f"Failed to create theme config: {e}")
 
-    def _apply_initial_theme(self):
+    def _apply_initial_theme(self) -> None:
         """初期テーマを適用"""
         if self._current_theme:
             self.set_theme(self._current_theme)
@@ -266,14 +266,14 @@ class PDFPageToolThemeManager(QObject):
         try:
             if self.theme_controller:
                 themes = self.theme_controller.get_available_themes()
-                return {name: config.get("display_name", name) for name, config in themes.items()}
+                return {name: str(config.get("display_name", name)) for name, config in themes.items()}
         except Exception as e:
             logger.error(f"Failed to get available themes: {e}")
         return {"light": "ライト", "dark": "ダーク"}
 
     def get_current_theme(self) -> str:
         """現在のテーマ名を取得"""
-        return self._current_theme
+        return str(self._current_theme)
 
     def set_theme(self, theme_name: str) -> bool:
         """テーマを設定"""
@@ -311,7 +311,7 @@ class PDFPageToolThemeManager(QObject):
         """一時的にテーマをプレビュー（設定には保存しない）"""
         try:
             # 現在のテーマを保存
-            old_theme = self._current_theme
+            old_theme = str(self._current_theme)
 
             # 一時的にテーマを変更
             self._current_theme = theme_name
@@ -332,9 +332,9 @@ class PDFPageToolThemeManager(QObject):
             logger.error(f"Error previewing theme '{theme_name}': {e}")
             # エラーが発生した場合は元のテーマに戻す
             try:
-                self._current_theme = old_theme
+                self._current_theme = str(old_theme)
                 if self.theme_controller:
-                    self.theme_controller.set_theme(old_theme, save_settings=False)
+                    self.theme_controller.set_theme(str(old_theme), save_settings=False)
             except Exception:  # nosec B110
                 pass
             return False
@@ -381,10 +381,12 @@ class PDFPageToolThemeManager(QObject):
                     theme_config = self.theme_controller.loader.get_theme_config(theme_name)
                     if theme_config and StylesheetGenerator:
                         generator = StylesheetGenerator(theme_config)
-                        return generator.generate_qss()
+                        result = generator.generate_qss()
+                        return str(result)
 
                 # 現在のテーマのスタイルシートを取得
-                return self.theme_controller.get_current_stylesheet()
+                result = self.theme_controller.get_current_stylesheet()
+                return str(result)
             else:
                 return self._get_fallback_stylesheet()
         except Exception as e:
@@ -395,7 +397,8 @@ class PDFPageToolThemeManager(QObject):
         """テーマのQSSファイルをエクスポート"""
         try:
             if self.theme_controller:
-                return self.theme_controller.export_qss(output_path, theme_name)
+                result = self.theme_controller.export_qss(output_path, theme_name)
+                return bool(result)
             else:
                 # フォールバック: 基本スタイルシートをエクスポート
                 with open(output_path, "w", encoding="utf-8") as f:
@@ -409,7 +412,8 @@ class PDFPageToolThemeManager(QObject):
         """テーマ設定を再読み込み"""
         try:
             if self.theme_controller:
-                return self.theme_controller.reload_themes()
+                result = self.theme_controller.reload_themes()
+                return bool(result)
             return True
         except Exception as e:
             logger.error(f"Failed to reload themes: {e}")

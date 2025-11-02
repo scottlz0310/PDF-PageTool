@@ -14,7 +14,7 @@ from src.utils.logger import get_logger
 from src.utils.settings_manager import SettingsManager
 
 
-def test_settings_manager():
+def test_settings_manager() -> None:
     """設定管理システムのテスト"""
     print("=== 設定管理システムテスト ===")
 
@@ -66,7 +66,7 @@ def test_settings_manager():
     print("✅ 設定管理システムテスト完了")
 
 
-def test_logger_system():
+def test_logger_system() -> None:
     """ログシステムのテスト"""
     print("\n=== ログシステムテスト ===")
 
@@ -83,7 +83,7 @@ def test_logger_system():
     print("✅ ログシステムテスト完了")
 
 
-def test_file_operations():
+def test_file_operations() -> None:
     """ファイル操作のテスト"""
     print("\n=== ファイル操作テスト ===")
 
@@ -112,7 +112,7 @@ def test_file_operations():
     print("✅ ファイル操作テスト完了")
 
 
-def test_gui_components():
+def test_gui_components() -> None:
     """GUI コンポーネントのインポートテスト"""
     print("\n=== GUI コンポーネントテスト ===")
 
@@ -141,7 +141,7 @@ def test_gui_components():
         print(f"❌ GUI コンポーネントエラー: {e}")
 
 
-def test_theme_system():
+def test_theme_system() -> bool:
     """テーマシステムのテスト"""
     print("\n=== テーマシステムテスト ===")
 
@@ -172,7 +172,7 @@ def test_theme_system():
         return False
 
 
-def test_shortcut_system():
+def test_shortcut_system() -> bool:
     """ショートカットシステムのテスト"""
     print("\n=== ショートカットシステムテスト ===")
 
@@ -194,7 +194,7 @@ def test_shortcut_system():
         print(f"デフォルトショートカット数: {len(shortcut_manager.default_shortcuts)}")
 
         # テストアクション登録
-        def test_action():
+        def test_action() -> None:
             print("テストアクション実行")
 
         shortcut_manager.register_action("test_action", test_action, "Ctrl+T")
@@ -211,7 +211,7 @@ def test_shortcut_system():
         return False
 
 
-def main():
+def main() -> int:
     """メインテスト実行"""
     print("PDF-PageTool 新機能統合テスト")
     print("=" * 50)

@@ -6,6 +6,7 @@ PDF-PageTool Main Window
 
 import os
 from pathlib import Path
+from typing import Any
 
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
@@ -130,7 +131,7 @@ class MainWindow(QMainWindow):
         if pdf_files:
             self.load_pdf_files(pdf_files)
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         """UI初期設定"""
         # ウィンドウタイトル設定
         self.setWindowTitle("PDF-PageTool")
@@ -215,7 +216,7 @@ class MainWindow(QMainWindow):
 
         self.logger.debug("UI setup completed")
 
-    def _connect_signals(self):
+    def _connect_signals(self) -> None:
         """シグナル・スロット接続"""
         # メニューアクション
         self.ui.actionOpen.triggered.connect(self.open_files)
@@ -242,7 +243,7 @@ class MainWindow(QMainWindow):
 
         self.logger.debug("Signals connected")
 
-    def load_pdf_files(self, pdf_files: list[str]):
+    def load_pdf_files(self, pdf_files: list[str]) -> None:
         """PDFファイルを読み込み"""
         self.logger.info(f"Loading {len(pdf_files)} PDF files")
 
@@ -256,7 +257,7 @@ class MainWindow(QMainWindow):
 
         self.loader_thread.start()
 
-    def _on_file_loaded(self, file_path: str, pages: list[PDFPageInfo]):
+    def _on_file_loaded(self, file_path: str, pages: list[PDFPageInfo]) -> None:
         """ファイル読み込み完了時の処理（動的グループボックス対応）"""
         self.loaded_files[file_path] = pages
         self.logger.info(f"Loaded {file_path}: {len(pages)} pages")
@@ -276,7 +277,7 @@ class MainWindow(QMainWindow):
             # 3つ目以降 - 動的にグループボックスを作成
             self._create_dynamic_group_box(file_path, file_index)
 
-    def _create_dynamic_group_box(self, file_path: str, file_index: int):
+    def _create_dynamic_group_box(self, file_path: str, file_index: int) -> None:
         """3つ目以降のファイル用の動的グループボックスを作成"""
         try:
             # グループボックスを作成
@@ -321,7 +322,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.logger.error(f"Failed to create dynamic group box: {e}")
 
-    def _setup_splitter_proportions(self):
+    def _setup_splitter_proportions(self) -> None:
         """スプリッターの比率を設定（上部パネルと下部パネルの高さ比率）"""
         # ウィンドウの高さを取得
         window_height = self.height()
@@ -336,7 +337,7 @@ class MainWindow(QMainWindow):
         self.ui.splitter.setStretchFactor(0, 1)  # 上部パネル
         self.ui.splitter.setStretchFactor(1, 1)  # 下部パネル
 
-    def _setup_inputs_scroll_area(self):
+    def _setup_inputs_scroll_area(self) -> None:
         """上部パネルのスクロールエリアを初期設定"""
         # 水平スクロールバーを表示
         self.ui.scrollAreaInputs.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
@@ -350,7 +351,7 @@ class MainWindow(QMainWindow):
         if hasattr(self.ui, "scrollAreaWidgetInputs"):
             self.ui.scrollAreaWidgetInputs.setMinimumHeight(160)  # 最小限の高さのみ
 
-    def _update_inputs_scroll_area(self):
+    def _update_inputs_scroll_area(self) -> None:
         """上部パネルのスクロールエリアのサイズを更新"""
         try:
             # 現在のグループボックス数を取得
@@ -377,7 +378,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.logger.error(f"Failed to update inputs scroll area: {e}")
 
-    def _on_thumbnail_generated(self, file_path: str, thumbnail_path: str, page_info: PDFPageInfo):
+    def _on_thumbnail_generated(self, file_path: str, thumbnail_path: str, page_info: PDFPageInfo) -> None:
         """サムネイル生成完了時の処理"""
         # サムネイルをキャッシュに保存
         cache_key = f"{page_info.source_file}:{page_info.page_number}:{page_info.rotation}"
@@ -429,27 +430,28 @@ class MainWindow(QMainWindow):
             self.logger.error(f"Failed to generate thumbnail: {e}")
             return None
 
-    def _on_loading_error(self, file_path: str, error_message: str):
+    def _on_loading_error(self, file_path: str, error_message: str) -> None:
         """読み込みエラー時の処理"""
         self.logger.error(f"Loading error for {file_path}: {error_message}")
         QMessageBox.warning(self, "読み込みエラー", error_message)
 
-    def _on_progress_updated(self, file_path: str, current: int, total: int):
+    def _on_progress_updated(self, file_path: str, current: int, total: int) -> None:
         """進捗更新"""
         self.logger.debug(f"Progress {file_path}: {current}/{total}")
         # TODO: プログレスバー表示
 
-    def _on_loading_finished(self):
+    def _on_loading_finished(self) -> None:
         """読み込み完了"""
         self.logger.info("All files loaded successfully")
-        self.statusBar().showMessage("ファイル読み込み完了", 3000)
+        if self.statusBar():
+            self.statusBar().showMessage("ファイル読み込み完了", 3000)
 
-    def _on_thumbnail_clicked(self, page_info: PDFPageInfo):
+    def _on_thumbnail_clicked(self, page_info: PDFPageInfo) -> None:
         """サムネイルクリック時の処理"""
         self.logger.debug(f"Thumbnail clicked: {page_info}")
         # TODO: ページ選択状態の管理
 
-    def _on_thumbnail_double_clicked(self, page_info: PDFPageInfo):
+    def _on_thumbnail_double_clicked(self, page_info: PDFPageInfo) -> None:
         """サムネイルダブルクリック時の処理（出力エリアに追加）"""
         self.logger.debug(f"Adding page to output: {page_info}")
 
@@ -466,28 +468,30 @@ class MainWindow(QMainWindow):
         # 出力エリアに追加
         self.output_area.add_page(page_info, thumbnail_path)
 
-    def _on_output_page_added(self, page_info: PDFPageInfo):
+    def _on_output_page_added(self, page_info: PDFPageInfo) -> None:
         """出力エリアにページが追加された時の処理"""
         self.logger.info(f"Page added to output: {page_info}")
-        self.statusBar().showMessage(f"ページを出力に追加しました: ページ {page_info.page_number + 1}", 2000)
+        if self.statusBar():
+            self.statusBar().showMessage(f"ページを出力に追加しました: ページ {page_info.page_number + 1}", 2000)
 
-    def _on_output_page_removed(self, page_info: PDFPageInfo):
+    def _on_output_page_removed(self, page_info: PDFPageInfo) -> None:
         """出力エリアからページが削除された時の処理"""
         self.logger.info(f"Page removed from output: {page_info}")
-        self.statusBar().showMessage(f"ページを出力から削除しました: ページ {page_info.page_number + 1}", 2000)
+        if self.statusBar():
+            self.statusBar().showMessage(f"ページを出力から削除しました: ページ {page_info.page_number + 1}", 2000)
 
-    def open_files(self):
+    def open_files(self) -> None:
         """ファイルを開くダイアログ"""
         files, _ = QFileDialog.getOpenFileNames(self, "PDFファイルを選択", "", "PDF Files (*.pdf)")
         if files:
             self.load_pdf_files(files)
 
-    def _on_thumbnail_right_clicked(self, page_info: PDFPageInfo):
+    def _on_thumbnail_right_clicked(self, page_info: PDFPageInfo) -> None:
         """サムネイル右クリック時の処理"""
         self.logger.debug(f"Thumbnail right-clicked: {page_info}")
         # TODO: コンテキストメニュー表示
 
-    def save_pdf(self):
+    def save_pdf(self) -> None:
         """PDFを保存"""
         output_pages = self.output_area.get_pages()
         if not output_pages:
@@ -505,21 +509,21 @@ class MainWindow(QMainWindow):
                 QMessageBox.critical(self, "エラー", f"保存に失敗しました: {e}")
                 self.logger.error(f"Save failed: {e}")
 
-    def save_pdf_as(self):
+    def save_pdf_as(self) -> None:
         """名前を付けてPDFを保存"""
         self.save_pdf()
 
-    def rotate_selected_pages(self, angle: int):
+    def rotate_selected_pages(self, angle: int) -> None:
         """選択されたページを回転"""
         # TODO: 選択されたページの回転処理
         self.logger.debug(f"Rotate pages by {angle} degrees")
 
-    def remove_selected_pages(self):
+    def remove_selected_pages(self) -> None:
         """選択されたページを削除"""
         # TODO: 選択されたページの削除処理
         self.logger.debug("Remove selected pages")
 
-    def show_about(self):
+    def show_about(self) -> None:
         """バージョン情報表示"""
         QMessageBox.about(
             self,
@@ -527,7 +531,7 @@ class MainWindow(QMainWindow):
             "PDF-PageTool v0.1.0\n\nPDFページの抽出・結合ツール\nシンプルで直感的な操作を提供します。",
         )
 
-    def open_settings(self):
+    def open_settings(self) -> None:
         """設定ダイアログを開く"""
         try:
             current_settings = self.settings_manager.get_all()
@@ -547,7 +551,7 @@ class MainWindow(QMainWindow):
             self.logger.error(f"Failed to open settings dialog: {e}")
             QMessageBox.warning(self, "エラー", f"設定ダイアログの表示に失敗しました: {e}")
 
-    def open_thumbnail_size_dialog(self):
+    def open_thumbnail_size_dialog(self) -> None:
         """サムネイルサイズ設定ダイアログを開く"""
         try:
             current_size = self.settings_manager.get("thumbnail_size", 160)
@@ -564,7 +568,7 @@ class MainWindow(QMainWindow):
             self.logger.error(f"Error opening thumbnail size dialog: {e}")
             QMessageBox.critical(self, "エラー", f"サムネイルサイズ設定ダイアログを開く際にエラーが発生しました: {e}")
 
-    def _apply_settings_changes(self, new_settings):
+    def _apply_settings_changes(self, new_settings: dict[str, Any]) -> None:
         """設定変更を適用"""
         try:
             # ログレベルの変更
@@ -584,7 +588,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.logger.error(f"Failed to apply settings changes: {e}")
 
-    def _apply_theme(self, theme_name: str):
+    def _apply_theme(self, theme_name: str) -> None:
         """テーマを適用（統合テーママネージャーを使用）"""
         try:
             # 統合テーママネージャーを使用してテーマを適用
@@ -601,7 +605,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.logger.error(f"Failed to apply theme: {e}")
 
-    def _apply_theme_to_widgets(self):
+    def _apply_theme_to_widgets(self) -> None:
         """個別ウィジェットにテーマを強制適用"""
         try:
             # メインウィンドウとその子ウィジェットすべてにテーマを適用
@@ -639,7 +643,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.logger.error(f"Failed to apply theme to individual widgets: {e}")
 
-    def _update_thumbnail_sizes(self, size: int):
+    def _update_thumbnail_sizes(self, size: int) -> None:
         """サムネイルサイズを更新"""
         try:
             # 既存のサムネイルを削除して再生成
@@ -648,7 +652,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.logger.error(f"Failed to update thumbnail sizes: {e}")
 
-    def _regenerate_thumbnails_with_new_size(self, size: int):
+    def _regenerate_thumbnails_with_new_size(self, size: int) -> None:
         """新しいサイズでサムネイルを再生成"""
         try:
             # サムネイルサイズを計算（4:3比率）
@@ -685,7 +689,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.logger.error(f"Failed to regenerate thumbnails: {e}")
 
-    def _clear_existing_thumbnails(self):
+    def _clear_existing_thumbnails(self) -> None:
         """既存のサムネイルファイルを削除"""
         try:
             temp_dir = self.pdf_operations.temp_dir
@@ -700,7 +704,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.logger.error(f"Failed to clear existing thumbnails: {e}")
 
-    def _update_thumbnail_widget(self, page_info, size: int):
+    def _update_thumbnail_widget(self, page_info: PDFPageInfo, size: int) -> None:
         """サムネイルウィジェットを更新"""
         try:
             # 該当するサムネイルウィジェットを検索して更新
@@ -723,7 +727,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.logger.error(f"Failed to update thumbnail widget: {e}")
 
-    def _update_layouts_for_new_size(self, size: int):
+    def _update_layouts_for_new_size(self, size: int) -> None:
         """新しいサムネイルサイズに合わせてレイアウトを更新"""
         try:
             # 出力エリアのレイアウト更新
@@ -747,7 +751,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.logger.error(f"Failed to update layouts for new size: {e}")
 
-    def _update_input_area_layout(self, scroll_area, size: int):
+    def _update_input_area_layout(self, scroll_area: Any, size: int) -> None:
         """入力エリアのレイアウトを更新"""
         try:
             if hasattr(scroll_area, "widget"):
@@ -761,7 +765,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.logger.warning(f"Failed to update input area layout: {e}")
 
-    def _force_layout_update(self, widget):
+    def _force_layout_update(self, widget: Any) -> None:
         """ウィジェットのレイアウト更新を強制"""
         try:
             if widget and hasattr(widget, "layout"):
@@ -774,7 +778,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.logger.warning(f"Failed to force layout update: {e}")
 
-    def _load_window_settings(self):
+    def _load_window_settings(self) -> None:
         """ウィンドウ設定を読み込み"""
         try:
             width = self.settings_manager.get("window_width", 1200)
@@ -792,7 +796,7 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.logger.error(f"Failed to load window settings: {e}")
 
-    def _save_window_settings(self):
+    def _save_window_settings(self) -> None:
         """ウィンドウ設定を保存"""
         try:
             if self.isMaximized():
@@ -809,7 +813,9 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.logger.error(f"Failed to save window settings: {e}")
 
-    def dragEnterEvent(self, event: QDragEnterEvent):
+    def dragEnterEvent(self, event: QDragEnterEvent | None) -> None:
+        if event is None:
+            return
         """ドラッグエンター時の処理"""
         try:
             self.logger.info("=== dragEnterEvent called ===")
@@ -855,7 +861,9 @@ class MainWindow(QMainWindow):
             self.logger.error(f"Error in dragEnterEvent: {e}")
             event.ignore()
 
-    def dropEvent(self, event: QDropEvent):
+    def dropEvent(self, event: QDropEvent | None) -> None:
+        if event is None:
+            return
         """ドロップ時の処理"""
         try:
             self.logger.info("=== dropEvent called ===")
@@ -885,7 +893,7 @@ class MainWindow(QMainWindow):
             self.logger.error(f"Error in dropEvent: {e}")
             event.ignore()
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: Any) -> None:
         """ウィンドウクローズ時の処理"""
         try:
             # 確認ダイアログ表示（設定で有効な場合）
@@ -914,7 +922,7 @@ class MainWindow(QMainWindow):
             self.logger.error(f"Error during application close: {e}")
             event.accept()  # エラーがあっても終了
 
-    def open_batch_processor(self):
+    def open_batch_processor(self) -> None:
         """バッチ処理ダイアログを開く"""
         try:
             dialog = BatchProcessorDialog(self)
@@ -924,7 +932,7 @@ class MainWindow(QMainWindow):
             self.logger.error(f"Failed to open batch processor: {e}")
             QMessageBox.warning(self, "エラー", f"バッチ処理ダイアログの表示に失敗しました: {e}")
 
-    def open_theme_manager(self):
+    def open_theme_manager(self) -> None:
         """統合テーママネージャーのテーマ設定ダイアログを開く"""
         try:
             from PyQt6.QtWidgets import (
@@ -958,7 +966,10 @@ class MainWindow(QMainWindow):
             original_theme = current_theme  # 元のテーマを保存
 
             for theme_name, theme_config in themes.items():
-                display_name = theme_config.get("display_name", theme_name)
+                if isinstance(theme_config, dict):
+                    display_name = theme_config.get("display_name", theme_name)
+                else:
+                    display_name = str(theme_config)
                 theme_combo.addItem(f"{display_name} ({theme_name})", theme_name)
 
                 # 現在のテーマを選択
@@ -1012,7 +1023,7 @@ class MainWindow(QMainWindow):
             self.logger.error(f"Failed to open theme manager: {e}")
             QMessageBox.warning(self, "エラー", f"テーマ設定ダイアログの表示に失敗しました: {e}")
 
-    def _force_theme_reapply(self):
+    def _force_theme_reapply(self) -> None:
         """ウィンドウ表示後にテーマを強制的に再適用"""
         try:
             current_theme = self.theme_manager.get_current_theme()

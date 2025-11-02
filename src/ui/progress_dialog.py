@@ -4,8 +4,11 @@ Progress Dialog Module
 進行状況表示とキャンセル機能付きダイアログ
 """
 
+from typing import Any
+
 from PyQt6 import QtCore
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
+from PyQt6.QtGui import QCloseEvent
 from PyQt6.QtWidgets import (
     QDialog,
     QHBoxLayout,
@@ -14,6 +17,7 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QTextEdit,
     QVBoxLayout,
+    QWidget,
 )
 
 from ..utils.logger import get_logger
@@ -25,7 +29,7 @@ class ProgressDialog(QDialog):
     # シグナル定義
     cancelled = pyqtSignal()
 
-    def __init__(self, title: str = "処理中...", parent=None):
+    def __init__(self, title: str = "処理中...", parent: QWidget | None = None):
         super().__init__(parent)
         self.logger = get_logger("ProgressDialog")
         self.is_cancelled = False
@@ -34,7 +38,7 @@ class ProgressDialog(QDialog):
 
         self._setup_ui(title)
 
-    def _setup_ui(self, title: str):
+    def _setup_ui(self, title: str) -> None:
         """UI設定"""
         self.setWindowTitle(title)
         self.setModal(True)
@@ -95,11 +99,11 @@ class ProgressDialog(QDialog):
         self.timer.timeout.connect(self._update_time)
         self.timer.start(1000)  # 1秒間隔
 
-    def set_range(self, minimum: int, maximum: int):
+    def set_range(self, minimum: int, maximum: int) -> None:
         """プログレスバーの範囲を設定"""
         self.progress_bar.setRange(minimum, maximum)
 
-    def set_value(self, value: int):
+    def set_value(self, value: int) -> None:
         """プログレスバーの値を設定"""
         self.progress_bar.setValue(value)
 
@@ -107,15 +111,15 @@ class ProgressDialog(QDialog):
         if self.auto_close and value >= self.progress_bar.maximum():
             QTimer.singleShot(1500, self.accept)  # 1.5秒後に自動で閉じる
 
-    def set_main_text(self, text: str):
+    def set_main_text(self, text: str) -> None:
         """メインメッセージを設定"""
         self.main_label.setText(text)
 
-    def set_detail_text(self, text: str):
+    def set_detail_text(self, text: str) -> None:
         """詳細メッセージを設定"""
         self.detail_label.setText(text)
 
-    def add_log(self, message: str):
+    def add_log(self, message: str) -> None:
         """ログメッセージを追加"""
         self.log_text.append(message)
         # 最新のメッセージまでスクロール
@@ -123,12 +127,12 @@ class ProgressDialog(QDialog):
         cursor.movePosition(cursor.MoveOperation.End)
         self.log_text.setTextCursor(cursor)
 
-    def set_cancelable(self, cancelable: bool):
+    def set_cancelable(self, cancelable: bool) -> None:
         """キャンセル可能かどうかを設定"""
         self.can_cancel = cancelable
         self.cancel_button.setEnabled(cancelable)
 
-    def set_auto_close(self, auto_close: bool):
+    def set_auto_close(self, auto_close: bool) -> None:
         """自動クローズを設定"""
         self.auto_close = auto_close
 
@@ -136,7 +140,7 @@ class ProgressDialog(QDialog):
         """キャンセルされているかどうかを確認"""
         return self.is_cancelled
 
-    def _toggle_log_display(self):
+    def _toggle_log_display(self) -> None:
         """ログ表示の切り替え"""
         if self.log_text.isVisible():
             self.log_text.setVisible(False)
@@ -147,7 +151,7 @@ class ProgressDialog(QDialog):
             self.show_log_button.setText("ログ非表示")
             self.resize(400, 350)
 
-    def _on_cancel(self):
+    def _on_cancel(self) -> None:
         """キャンセルボタンクリック"""
         if self.can_cancel:
             self.is_cancelled = True
@@ -155,7 +159,7 @@ class ProgressDialog(QDialog):
             self.cancel_button.setText("キャンセル中...")
             self.cancel_button.setEnabled(False)
 
-    def _update_time(self):
+    def _update_time(self) -> None:
         """経過時間更新"""
         elapsed = self.start_time.msecsTo(QtCore.QTime.currentTime())
         seconds = elapsed // 1000
@@ -169,8 +173,10 @@ class ProgressDialog(QDialog):
 
         self.time_label.setText(time_text)
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QCloseEvent | None) -> None:
         """ウィンドウクローズ時の処理"""
+        if event is None:
+            return
         # キャンセル可能な場合のみクローズを許可
         if self.can_cancel and not self.is_cancelled:
             self._on_cancel()
@@ -185,7 +191,7 @@ class ProgressDialog(QDialog):
 class ProgressManager:
     """プログレス管理クラス"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None):
         self.parent = parent
         self.dialog: ProgressDialog | None = None
         self.logger = get_logger("ProgressManager")
@@ -206,12 +212,12 @@ class ProgressManager:
 
         return self.dialog
 
-    def show_progress(self):
+    def show_progress(self) -> None:
         """プログレスダイアログを表示"""
         if self.dialog:
             self.dialog.show()
 
-    def update_progress(self, value: int, main_text: str = "", detail_text: str = ""):
+    def update_progress(self, value: int, main_text: str = "", detail_text: str = "") -> None:
         """プログレス更新"""
         if self.dialog:
             self.dialog.set_value(value)
@@ -220,12 +226,12 @@ class ProgressManager:
             if detail_text:
                 self.dialog.set_detail_text(detail_text)
 
-    def set_range(self, minimum: int, maximum: int):
+    def set_range(self, minimum: int, maximum: int) -> None:
         """プログレス範囲設定"""
         if self.dialog:
             self.dialog.set_range(minimum, maximum)
 
-    def add_log(self, message: str):
+    def add_log(self, message: str) -> None:
         """ログ追加"""
         if self.dialog:
             self.dialog.add_log(message)
@@ -234,23 +240,23 @@ class ProgressManager:
         """キャンセル状態確認"""
         return self.dialog.is_cancelled if self.dialog else False
 
-    def end_progress(self):
+    def end_progress(self) -> None:
         """プログレス表示終了"""
         if self.dialog:
             self.dialog.close()
             self.dialog = None
 
-    def __enter__(self):
+    def __enter__(self) -> "ProgressManager":
         """コンテキストマネージャー対応"""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         """コンテキストマネージャー終了時"""
         self.end_progress()
 
 
 # 使用例とテスト関数
-def test_progress_dialog():
+def test_progress_dialog() -> None:
     """プログレスダイアログのテスト"""
     import sys
     import time

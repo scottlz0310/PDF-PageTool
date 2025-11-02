@@ -18,7 +18,7 @@ from src.utils.logger import get_logger
 project_root = Path(__file__).parent.parent
 
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     """コマンドライン引数を解析"""
     parser = argparse.ArgumentParser(
         description="PDF-PageTool: PDFページ抽出・結合ツール",
@@ -65,14 +65,14 @@ def validate_pdf_files(file_paths: list[str]) -> list[str]:
     return valid_files
 
 
-def test_mode(pdf_files: list[str], log_level: str):
+def test_mode(pdf_files: list[str], log_level: str) -> bool:
     """テストモード：基本機能のテスト"""
     logger = get_logger("TestMode", log_level)
     logger.info("テストモードで起動しました")
 
     if not pdf_files:
         logger.info("テスト用サンプルファイルが必要です")
-        return
+        return False
 
     try:
         # PDF操作のテスト
@@ -98,7 +98,7 @@ def test_mode(pdf_files: list[str], log_level: str):
     return True
 
 
-def main():
+def main() -> int:
     """メイン関数"""
     args = parse_arguments()
 
@@ -153,7 +153,8 @@ def main():
         logger.info("GUIアプリケーションを起動しました")
 
         # イベントループを開始
-        return app.exec()
+        exit_code: int = app.exec()
+        return exit_code
 
     except KeyboardInterrupt:
         logger.info("ユーザーによって中断されました")

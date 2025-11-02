@@ -46,7 +46,7 @@ class SettingsDialog(QDialog):
         self._setup_ui()
         self._load_settings()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         """UI設定"""
         self.setWindowTitle("設定")
         self.setModal(True)
@@ -84,7 +84,7 @@ class SettingsDialog(QDialog):
 
         layout.addLayout(button_layout)
 
-    def _setup_general_tab(self):
+    def _setup_general_tab(self) -> None:
         """一般設定タブ"""
         tab = QWidget()
         self.tab_widget.addTab(tab, "一般")
@@ -134,7 +134,7 @@ class SettingsDialog(QDialog):
 
         layout.addStretch()
 
-    def _setup_ui_tab(self):
+    def _setup_ui_tab(self) -> None:
         """UI設定タブ"""
         tab = QWidget()
         self.tab_widget.addTab(tab, "表示")
@@ -211,7 +211,7 @@ class SettingsDialog(QDialog):
 
         layout.addStretch()
 
-    def _setup_performance_tab(self):
+    def _setup_performance_tab(self) -> None:
         """パフォーマンス設定タブ"""
         tab = QWidget()
         self.tab_widget.addTab(tab, "パフォーマンス")
@@ -265,7 +265,7 @@ class SettingsDialog(QDialog):
 
         layout.addStretch()
 
-    def _setup_advanced_tab(self):
+    def _setup_advanced_tab(self) -> None:
         """詳細設定タブ"""
         tab = QWidget()
         self.tab_widget.addTab(tab, "詳細")
@@ -303,7 +303,7 @@ class SettingsDialog(QDialog):
 
         layout.addStretch()
 
-    def _on_theme_changed(self, theme_name: str):
+    def _on_theme_changed(self, theme_name: str) -> None:
         """テーマ変更時の処理（統合テーママネージャー互換）"""
         try:
             # 一時設定を更新
@@ -316,17 +316,17 @@ class SettingsDialog(QDialog):
         except Exception as e:
             self.logger.error(f"Failed to change theme: {e}")
 
-    def _browse_output_folder(self):
+    def _browse_output_folder(self) -> None:
         """出力フォルダ選択"""
         folder = QFileDialog.getExistingDirectory(self, "出力フォルダを選択", self.output_folder_edit.text())
         if folder:
             self.output_folder_edit.setText(folder)
 
-    def _update_thumbnail_size_label(self, value):
+    def _update_thumbnail_size_label(self, value: int) -> None:
         """サムネイルサイズラベル更新"""
         self.thumbnail_size_label.setText(f"{value}px")
 
-    def _load_settings(self):
+    def _load_settings(self) -> None:
         """現在の設定を読み込み"""
         # 一般設定
         self.output_folder_edit.setText(self.temp_settings.get("output_folder", ""))
@@ -369,7 +369,7 @@ class SettingsDialog(QDialog):
         self.hardware_acceleration_check.setChecked(self.temp_settings.get("hardware_acceleration", False))
         self.preview_mode_check.setChecked(self.temp_settings.get("preview_mode", False))
 
-    def _save_settings(self):
+    def _save_settings(self) -> None:
         """現在のUI状態を設定に保存"""
         # 一般設定
         self.temp_settings["output_folder"] = self.output_folder_edit.text()
@@ -398,7 +398,7 @@ class SettingsDialog(QDialog):
         self.temp_settings["hardware_acceleration"] = self.hardware_acceleration_check.isChecked()
         self.temp_settings["preview_mode"] = self.preview_mode_check.isChecked()
 
-    def _reset_to_defaults(self):
+    def _reset_to_defaults(self) -> None:
         """デフォルト設定に戻す"""
         reply = QMessageBox.question(
             self,
@@ -412,7 +412,7 @@ class SettingsDialog(QDialog):
             self.temp_settings = self._get_default_settings()
             self._load_settings()
 
-    def _get_default_settings(self):
+    def _get_default_settings(self) -> dict[str, Any]:
         """デフォルト設定を取得"""
         return {
             "output_folder": "",
@@ -436,12 +436,12 @@ class SettingsDialog(QDialog):
             "preview_mode": False,
         }
 
-    def _accept_settings(self):
+    def _accept_settings(self) -> None:
         """設定を適用して閉じる"""
         self._save_settings()
         self.settings_changed.emit(self.temp_settings)
         self.accept()
 
-    def get_settings(self):
+    def get_settings(self) -> dict[str, Any]:
         """現在の設定を取得"""
         return self.temp_settings.copy()

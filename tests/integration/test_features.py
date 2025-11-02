@@ -16,7 +16,7 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 
-def test_pdf_merge():
+def test_pdf_merge() -> bool:
     """PDF結合機能のテスト"""
     logger = get_logger("PDFMergeTest", "DEBUG")
     logger.info("PDF結合機能のテストを開始します")
@@ -94,7 +94,7 @@ def test_pdf_merge():
         return False
 
 
-def test_page_rotation():
+def test_page_rotation() -> bool:
     """ページ回転機能のテスト"""
     logger = get_logger("PageRotationTest", "DEBUG")
     logger.info("ページ回転機能のテストを開始します")
@@ -146,7 +146,7 @@ def test_page_rotation():
         return False
 
 
-def main():
+def main() -> bool:
     """メイン関数"""
     logger = get_logger("PDFPageToolTest", "INFO")
     logger.info("PDF-PageTool 機能テストを開始します")

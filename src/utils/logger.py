@@ -34,7 +34,7 @@ class PDFPageToolLogger:
         self.log_level = log_level.upper()
         self._setup_logger()
 
-    def _setup_logger(self):
+    def _setup_logger(self) -> None:
         """ロガーの設定を行います"""
         # 既存のハンドラーをクリア
         self.logger.handlers.clear()
@@ -69,13 +69,14 @@ class PDFPageToolLogger:
                     "CRITICAL": "red,bg_white",
                 },
             )
+            console_handler.setFormatter(console_format)
         else:
             console_handler = logging.StreamHandler()
             console_format = logging.Formatter(
                 "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
                 datefmt="%Y-%m-%d %H:%M:%S",
             )
-        console_handler.setFormatter(console_format)
+            console_handler.setFormatter(console_format)
         self.logger.addHandler(console_handler)
 
         # ファイルハンドラーの設定（デバッグモード時のみ）
@@ -92,27 +93,27 @@ class PDFPageToolLogger:
             file_handler.setFormatter(file_format)
             self.logger.addHandler(file_handler)
 
-    def debug(self, message: str):
+    def debug(self, message: str) -> None:
         """デバッグメッセージをログ出力"""
         self.logger.debug(message)
 
-    def verbose(self, message: str):
+    def verbose(self, message: str) -> None:
         """詳細メッセージをログ出力（DEBUGレベルとして扱う）"""
         self.logger.debug(f"[VERBOSE] {message}")
 
-    def info(self, message: str):
+    def info(self, message: str) -> None:
         """情報メッセージをログ出力"""
         self.logger.info(message)
 
-    def warning(self, message: str):
+    def warning(self, message: str) -> None:
         """警告メッセージをログ出力"""
         self.logger.warning(message)
 
-    def error(self, message: str):
+    def error(self, message: str) -> None:
         """エラーメッセージをログ出力"""
         self.logger.error(message)
 
-    def critical(self, message: str):
+    def critical(self, message: str) -> None:
         """重大なエラーメッセージをログ出力"""
         self.logger.critical(message)
 

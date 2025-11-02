@@ -3,6 +3,7 @@
 """
 
 from collections.abc import Callable
+from typing import Any
 
 from PyQt6.QtCore import QObject, pyqtSignal
 from PyQt6.QtGui import QKeySequence, QShortcut
@@ -64,7 +65,7 @@ class ShortcutManager(QObject):
 
         logger.info("ShortcutManager initialized")
 
-    def register_action(self, name: str, action: Callable[[], None], shortcut_key: str | None = None):
+    def register_action(self, name: str, action: Callable[[], None], shortcut_key: str | None = None) -> None:
         """アクションとショートカットを登録"""
         self.actions[name] = action
 
@@ -74,7 +75,7 @@ class ShortcutManager(QObject):
         if shortcut_key:
             self.create_shortcut(name, shortcut_key, action)
 
-    def create_shortcut(self, name: str, key_sequence: str, action: Callable[[], None]):
+    def create_shortcut(self, name: str, key_sequence: str, action: Callable[[], None]) -> None:
         """ショートカットを作成"""
         try:
             # 既存のショートカットがあれば削除
@@ -92,7 +93,7 @@ class ShortcutManager(QObject):
         except Exception as e:
             logger.error(f"Failed to create shortcut {name}: {e}")
 
-    def _execute_action(self, name: str, action: Callable[[], None]):
+    def _execute_action(self, name: str, action: Callable[[], None]) -> None:
         """アクションを実行"""
         try:
             logger.debug(f"Executing shortcut action: {name}")
@@ -101,14 +102,14 @@ class ShortcutManager(QObject):
         except Exception as e:
             logger.error(f"Error executing shortcut action {name}: {e}")
 
-    def remove_shortcut(self, name: str):
+    def remove_shortcut(self, name: str) -> None:
         """ショートカットを削除"""
         if name in self.shortcuts:
             self.shortcuts[name].deleteLater()
             del self.shortcuts[name]
             logger.debug(f"Shortcut removed: {name}")
 
-    def update_shortcut(self, name: str, new_key_sequence: str):
+    def update_shortcut(self, name: str, new_key_sequence: str) -> None:
         """ショートカットキーを更新"""
         if name in self.actions:
             self.create_shortcut(name, new_key_sequence, self.actions[name])
@@ -126,7 +127,7 @@ class ShortcutManager(QObject):
             result[name] = shortcut.key().toString()
         return result
 
-    def load_shortcuts_from_settings(self):
+    def load_shortcuts_from_settings(self) -> None:
         """設定からショートカットを読み込み"""
         custom_shortcuts = self.settings.get("keyboard_shortcuts", {})
 
@@ -134,12 +135,12 @@ class ShortcutManager(QObject):
             if name in self.actions:
                 self.update_shortcut(name, key_sequence)
 
-    def save_shortcuts_to_settings(self):
+    def save_shortcuts_to_settings(self) -> None:
         """ショートカットを設定に保存"""
         shortcuts_dict = self.get_all_shortcuts()
         self.settings.set("keyboard_shortcuts", shortcuts_dict)
 
-    def reset_to_defaults(self):
+    def reset_to_defaults(self) -> None:
         """デフォルトショートカットにリセット"""
         for name, action in self.actions.items():
             default_key = self.default_shortcuts.get(name)
@@ -207,14 +208,17 @@ class ShortcutDialog:
     pass
 
 
-def setup_main_window_shortcuts(main_window, shortcut_manager: ShortcutManager):
+def setup_main_window_shortcuts(main_window: Any, shortcut_manager: ShortcutManager) -> None:
     """メインウィンドウのショートカットを設定"""
 
     # ファイル操作
-    shortcut_manager.register_action("open_files", main_window.open_files)
-    shortcut_manager.register_action("save_pdf", main_window.save_pdf)
-    shortcut_manager.register_action("save_pdf_as", main_window.save_pdf_as)
-    shortcut_manager.register_action("quit_app", main_window.close)
+    if hasattr(main_window, "open_files"):
+        shortcut_manager.register_action("open_files", main_window.open_files)
+    if hasattr(main_window, "save_pdf"):
+        shortcut_manager.register_action("save_pdf", main_window.save_pdf)
+    if hasattr(main_window, "save_pdf_as"):
+        shortcut_manager.register_action("save_pdf_as", main_window.save_pdf_as)
+    shortcut_manager.register_action("quit_app", lambda: main_window.close())
 
     # 編集操作
     if hasattr(main_window, "select_all_pages"):

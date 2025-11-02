@@ -8,6 +8,7 @@ import os
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
+from typing import Any
 
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import QThread, pyqtSignal
@@ -49,7 +50,7 @@ class BatchJob:
     operation: BatchOperation
     input_files: list[str]
     output_directory: str
-    parameters: dict[str, any]
+    parameters: dict[str, Any]
     name: str = ""
 
 
@@ -68,11 +69,11 @@ class BatchProcessorThread(QThread):
         self.logger = get_logger("BatchProcessor", log_level)
         self.should_stop = False
 
-    def stop(self):
+    def stop(self) -> None:
         """処理を停止"""
         self.should_stop = True
 
-    def run(self):
+    def run(self) -> None:
         """バッチ処理実行"""
         try:
             total_files = len(self.job.input_files)
@@ -139,8 +140,8 @@ class BatchProcessorThread(QThread):
             # PDFを読み込んで再保存（基本的な処理）
             pages = self.pdf_ops.load_pdf(file_path)
             if pages:
-                success = self.pdf_ops.merge_pages(pages, output_path)
-                return success
+                self.pdf_ops.merge_pages(pages, output_path)
+                return True
             return False
 
         except Exception as e:
@@ -160,8 +161,11 @@ class BatchProcessorThread(QThread):
             for i, page in enumerate(pages):
                 output_path = os.path.join(self.job.output_directory, f"{base_name}_page_{i + 1}.pdf")
 
-                if self.pdf_ops.merge_pages([page], output_path):
+                try:
+                    self.pdf_ops.merge_pages([page], output_path)
                     success_count += 1
+                except Exception as e:
+                    self.logger.error(f"Failed to save page {i + 1}: {e}")
 
             return success_count == len(pages)
 
@@ -184,7 +188,8 @@ class BatchProcessorThread(QThread):
 
             output_path = os.path.join(self.job.output_directory, f"rotated_{Path(file_path).name}")
 
-            return self.pdf_ops.merge_pages(pages, output_path)
+            self.pdf_ops.merge_pages(pages, output_path)
+            return True
 
         except Exception as e:
             self.logger.error(f"Rotation failed for {file_path}: {e}")
@@ -207,7 +212,8 @@ class BatchProcessorThread(QThread):
 
             output_path = os.path.join(self.job.output_directory, f"extracted_{Path(file_path).name}")
 
-            return self.pdf_ops.merge_pages(extracted_pages, output_path)
+            self.pdf_ops.merge_pages(extracted_pages, output_path)
+            return True
 
         except Exception as e:
             self.logger.error(f"Extraction failed for {file_path}: {e}")
@@ -223,7 +229,8 @@ class BatchProcessorThread(QThread):
 
             output_path = os.path.join(self.job.output_directory, f"optimized_{Path(file_path).name}")
 
-            return self.pdf_ops.merge_pages(pages, output_path)
+            self.pdf_ops.merge_pages(pages, output_path)
+            return True
 
         except Exception as e:
             self.logger.error(f"Optimization failed for {file_path}: {e}")
@@ -233,15 +240,15 @@ class BatchProcessorThread(QThread):
 class BatchProcessorDialog(QDialog):
     """バッチ処理ダイアログ"""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
         self.logger = get_logger("BatchProcessorDialog")
-        self.processor_thread = None
-        self.current_job = None
+        self.processor_thread: BatchProcessorThread | None = None
+        self.current_job: BatchJob | None = None
 
         self._setup_ui()
 
-    def _setup_ui(self):
+    def _setup_ui(self) -> None:
         """UI設定"""
         self.setWindowTitle("バッチ処理")
         self.setModal(True)
@@ -279,7 +286,7 @@ class BatchProcessorDialog(QDialog):
 
         layout.addLayout(button_layout)
 
-    def _setup_config_tab(self):
+    def _setup_config_tab(self) -> None:
         """設定タブ"""
         tab = QWidget()
         self.tab_widget.addTab(tab, "設定")
@@ -368,7 +375,7 @@ class BatchProcessorDialog(QDialog):
 
         layout.addStretch()
 
-    def _setup_progress_tab(self):
+    def _setup_progress_tab(self) -> None:
         """進行状況タブ"""
         tab = QWidget()
         self.tab_widget.addTab(tab, "進行状況")
@@ -387,23 +394,23 @@ class BatchProcessorDialog(QDialog):
         self.log_text.setReadOnly(True)
         layout.addWidget(self.log_text)
 
-    def _add_files(self):
+    def _add_files(self) -> None:
         """ファイル追加"""
         files, _ = QFileDialog.getOpenFileNames(self, "PDFファイルを選択", "", "PDF files (*.pdf)")
         for file_path in files:
             self.file_list.addItem(file_path)
 
-    def _clear_files(self):
+    def _clear_files(self) -> None:
         """ファイルリストクリア"""
         self.file_list.clear()
 
-    def _browse_output_directory(self):
+    def _browse_output_directory(self) -> None:
         """出力ディレクトリ選択"""
         directory = QFileDialog.getExistingDirectory(self, "出力ディレクトリを選択", self.output_dir_edit.text())
         if directory:
             self.output_dir_edit.setText(directory)
 
-    def _start_processing(self):
+    def _start_processing(self) -> None:
         """処理開始"""
         try:
             # 入力チェック
@@ -466,7 +473,7 @@ class BatchProcessorDialog(QDialog):
             self.logger.error(f"Failed to start processing: {e}")
             QtWidgets.QMessageBox.critical(self, "エラー", f"処理開始に失敗しました: {e}")
 
-    def _stop_processing(self):
+    def _stop_processing(self) -> None:
         """処理停止"""
         if self.processor_thread and self.processor_thread.isRunning():
             self.processor_thread.stop()
@@ -486,19 +493,19 @@ class BatchProcessorDialog(QDialog):
             return BatchOperation.OPTIMIZE_ALL
         return None
 
-    def _on_progress_updated(self, current: int, total: int, message: str):
+    def _on_progress_updated(self, current: int, total: int, message: str) -> None:
         """進行状況更新"""
         self.progress_bar.setRange(0, total)
         self.progress_bar.setValue(current)
         self.progress_label.setText(f"{current}/{total} - {message}")
 
-    def _on_file_processed(self, file_path: str, success: bool, message: str):
+    def _on_file_processed(self, file_path: str, success: bool, message: str) -> None:
         """ファイル処理完了"""
         file_name = Path(file_path).name
         status = "✅" if success else "❌"
         self.log_text.append(f"{status} {file_name}: {message}")
 
-    def _on_job_completed(self, success: bool, message: str):
+    def _on_job_completed(self, success: bool, message: str) -> None:
         """ジョブ完了"""
         self.start_button.setEnabled(True)
         self.stop_button.setEnabled(False)

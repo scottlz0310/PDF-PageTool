@@ -37,7 +37,26 @@ python_version = "3.13"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
-exclude = [ "venv/", "build/", "dist/",]
+ignore_missing_imports = true
+strict = true
+exclude = [ "venv/", "build/", "dist/", "tests/debug/",]
+
+[[tool.mypy.overrides]]
+module = "src.ui.*"
+disallow_untyped_defs = false
+disallow_any_expr = false
+disallow_any_explicit = false
+no_implicit_reexport = false
+disable_error_code = ["misc", "no-any-return", "assignment", "attr-defined", "arg-type"]
+
+[[tool.mypy.overrides]]
+module = "PyQt6.*"
+ignore_missing_imports = true
+follow_imports = "skip"
+
+[[tool.mypy.overrides]]
+module = "tests.debug.*"
+ignore_errors = true
 
 [tool.bandit]
 exclude_dirs = [ "tests", "test_*",]

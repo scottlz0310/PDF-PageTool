@@ -5,13 +5,13 @@ from PyQt6.QtCore import Qt
 class ThumbnailSizeDialog(QtWidgets.QDialog):
     """サムネイルサイズ設定ダイアログ"""
 
-    def __init__(self, current_size: int = 160, parent=None):
+    def __init__(self, current_size: int = 160, parent: QtWidgets.QWidget | None = None):
         super().__init__(parent)
         self.current_size = current_size
         self.new_size = current_size
         self.setup_ui()
 
-    def setup_ui(self):
+    def setup_ui(self) -> None:
         """UIを設定"""
         self.setWindowTitle("サムネイルサイズ設定")
         self.setFixedSize(400, 200)
@@ -89,7 +89,7 @@ class ThumbnailSizeDialog(QtWidgets.QDialog):
         self.size_slider.valueChanged.connect(self.update_size)
         self.size_spinbox.valueChanged.connect(self.update_size_from_spinbox)
 
-    def update_size(self, value: int):
+    def update_size(self, value: int) -> None:
         """スライダー値の変更を反映"""
         self.new_size = value
         self.size_spinbox.blockSignals(True)
@@ -97,7 +97,7 @@ class ThumbnailSizeDialog(QtWidgets.QDialog):
         self.size_spinbox.blockSignals(False)
         self.update_preview()
 
-    def update_size_from_spinbox(self, value: int):
+    def update_size_from_spinbox(self, value: int) -> None:
         """スピンボックス値の変更を反映"""
         self.new_size = value
         self.size_slider.blockSignals(True)
@@ -105,11 +105,11 @@ class ThumbnailSizeDialog(QtWidgets.QDialog):
         self.size_slider.blockSignals(False)
         self.update_preview()
 
-    def update_preview(self):
+    def update_preview(self) -> None:
         """プレビュー表示を更新"""
         self.preview_label.setText(f"プレビューサイズ: {self.new_size}px")
 
-    def reset_to_default(self):
+    def reset_to_default(self) -> None:
         """デフォルト値にリセット"""
         self.size_slider.setValue(160)
 

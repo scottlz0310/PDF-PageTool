@@ -19,7 +19,7 @@ class SettingsManager:
         self.logger = get_logger("SettingsManager")
         self.settings_file = self._get_settings_file_path()
         self._default_settings = self._get_default_settings()
-        self._current_settings = {}
+        self._current_settings: dict[str, Any] = {}
 
         self.load_settings()
 
@@ -71,7 +71,7 @@ class SettingsManager:
             "max_recent_files": 10,
         }
 
-    def load_settings(self):
+    def load_settings(self) -> None:
         """設定をファイルから読み込み"""
         try:
             if self.settings_file.exists():
@@ -91,7 +91,7 @@ class SettingsManager:
             self.logger.error(f"Failed to load settings: {e}")
             self._current_settings = self._default_settings.copy()
 
-    def save_settings(self):
+    def save_settings(self) -> None:
         """設定をファイルに保存"""
         try:
             # 設定ディレクトリが存在することを確認
@@ -105,15 +105,15 @@ class SettingsManager:
         except Exception as e:
             self.logger.error(f"Failed to save settings: {e}")
 
-    def get(self, key: str, default=None):
+    def get(self, key: str, default: Any = None) -> Any:
         """設定値を取得"""
         return self._current_settings.get(key, default)
 
-    def set(self, key: str, value: Any):
+    def set(self, key: str, value: Any) -> None:
         """設定値を設定"""
         self._current_settings[key] = value
 
-    def update(self, settings: dict[str, Any]):
+    def update(self, settings: dict[str, Any]) -> None:
         """複数の設定値を一括更新"""
         self._current_settings.update(settings)
 
@@ -121,12 +121,12 @@ class SettingsManager:
         """すべての設定を取得"""
         return self._current_settings.copy()
 
-    def reset_to_defaults(self):
+    def reset_to_defaults(self) -> None:
         """設定をデフォルトに戻す"""
         self._current_settings = self._default_settings.copy()
         self.logger.info("Settings reset to defaults")
 
-    def add_recent_file(self, file_path: str):
+    def add_recent_file(self, file_path: str) -> None:
         """最近使用したファイルを追加"""
         recent_files = self._current_settings.get("recent_files", [])
 
@@ -144,7 +144,7 @@ class SettingsManager:
 
         self._current_settings["recent_files"] = recent_files
 
-    def get_recent_files(self) -> list:
+    def get_recent_files(self) -> list[str]:
         """最近使用したファイル一覧を取得"""
         recent_files = self._current_settings.get("recent_files", [])
         # 存在するファイルのみを返す
@@ -159,6 +159,6 @@ class SettingsManager:
 
         return existing_files
 
-    def clear_recent_files(self):
+    def clear_recent_files(self) -> None:
         """最近使用したファイル一覧をクリア"""
         self._current_settings["recent_files"] = []
