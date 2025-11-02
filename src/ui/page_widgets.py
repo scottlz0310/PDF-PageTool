@@ -5,7 +5,6 @@ PDF Page Widget Module
 """
 
 import os
-from typing import List
 
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import QMimeData, QPoint, Qt, pyqtSignal
@@ -32,8 +31,9 @@ class PageThumbnailWidget(QLabel):
     rotation_requested = pyqtSignal(object, int)  # PDFPageInfo, angle
     removal_requested = pyqtSignal(object)  # PDFPageInfo
 
-    def __init__(self, page_info: PDFPageInfo, thumbnail_path: str,
-                 is_output: bool = False, parent: QWidget | None = None):
+    def __init__(
+        self, page_info: PDFPageInfo, thumbnail_path: str, is_output: bool = False, parent: QWidget | None = None
+    ):
         super().__init__(parent)
 
         self.page_info = page_info
@@ -113,9 +113,7 @@ class PageThumbnailWidget(QLabel):
 
             # サイズ調整
             scaled_pixmap = pixmap.scaled(
-                140, 180,
-                Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.SmoothTransformation
+                140, 180, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation
             )
 
             # ページ番号をオーバーレイ
@@ -277,8 +275,8 @@ class OutputArea(QWidget):
         super().__init__(parent)
 
         self.logger = get_logger("OutputArea")
-        self.pages: List[PDFPageInfo] = []
-        self.page_widgets: List[PageThumbnailWidget] = []
+        self.pages: list[PDFPageInfo] = []
+        self.page_widgets: list[PageThumbnailWidget] = []
         self.get_thumbnail_path = None  # メインウィンドウから設定される関数
 
         self._setup_ui()
@@ -440,9 +438,11 @@ class OutputArea(QWidget):
                     # 既存ページの並び替えかどうかを確認
                     existing_index = -1
                     for i, existing_page in enumerate(self.pages):
-                        if (existing_page.source_file == page_info.source_file and
-                            existing_page.page_number == page_info.page_number and
-                            existing_page.rotation == page_info.rotation):
+                        if (
+                            existing_page.source_file == page_info.source_file
+                            and existing_page.page_number == page_info.page_number
+                            and existing_page.rotation == page_info.rotation
+                        ):
                             existing_index = i
                             break
 
@@ -523,13 +523,14 @@ class OutputArea(QWidget):
         cols = max(1, self.width() // 170)
 
         # ドロップ位置に最も近いウィジェットを探す
-        min_distance = float('inf')
+        min_distance = float("inf")
         closest_index = len(self.page_widgets)
 
         for i, widget in enumerate(self.page_widgets):
             widget_center = widget.geometry().center()
-            distance = ((drop_position.x() - widget_center.x()) ** 2 +
-                       (drop_position.y() - widget_center.y()) ** 2) ** 0.5
+            distance = (
+                (drop_position.x() - widget_center.x()) ** 2 + (drop_position.y() - widget_center.y()) ** 2
+            ) ** 0.5
 
             if distance < min_distance:
                 min_distance = distance
@@ -551,8 +552,10 @@ class OutputArea(QWidget):
 
         # 重複チェック
         for existing_page in self.pages:
-            if (existing_page.source_file == page_info.source_file and
-                existing_page.page_number == page_info.page_number):
+            if (
+                existing_page.source_file == page_info.source_file
+                and existing_page.page_number == page_info.page_number
+            ):
                 self.logger.info(f"Page already exists in output: {page_info}")
                 return
 
@@ -578,7 +581,7 @@ class OutputArea(QWidget):
         super().resizeEvent(event)
         self._update_layout()
 
-    def get_pages(self) -> List[PDFPageInfo]:
+    def get_pages(self) -> list[PDFPageInfo]:
         """現在の出力ページリストを取得"""
         return self.pages.copy()
 

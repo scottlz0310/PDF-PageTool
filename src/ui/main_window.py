@@ -6,7 +6,6 @@ PDF-PageTool Main Window
 
 import os
 from pathlib import Path
-from typing import Dict, List
 
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import Qt, QThread, pyqtSignal
@@ -34,7 +33,7 @@ class PDFLoaderThread(QThread):
     error_occurred = pyqtSignal(str, str)  # ファイルパス, エラーメッセージ
     progress_updated = pyqtSignal(str, int, int)  # ファイルパス, 現在, 総数
 
-    def __init__(self, pdf_files: List[str], log_level: str = "INFO"):
+    def __init__(self, pdf_files: list[str], log_level: str = "INFO"):
         super().__init__()
         self.pdf_files = pdf_files
         self.pdf_ops = PDFOperations(log_level)
@@ -68,7 +67,7 @@ class PDFLoaderThread(QThread):
 class MainWindow(QMainWindow):
     """メインウィンドウクラス"""
 
-    def __init__(self, pdf_files: List[str] | None = None, log_level: str = "INFO"):
+    def __init__(self, pdf_files: list[str] | None = None, log_level: str = "INFO"):
         super().__init__()
 
         # 設定管理システム初期化
@@ -90,13 +89,13 @@ class MainWindow(QMainWindow):
 
         # 内部状態
         self.pdf_operations = PDFOperations(self.log_level)
-        self.loaded_files: Dict[str, List[PDFPageInfo]] = {}
-        self.thumbnail_widgets: Dict[str, List[PageThumbnailWidget]] = {}
-        self.thumbnail_cache: Dict[str, str] = {}  # ページキー -> サムネイルパス
+        self.loaded_files: dict[str, list[PDFPageInfo]] = {}
+        self.thumbnail_widgets: dict[str, list[PageThumbnailWidget]] = {}
+        self.thumbnail_cache: dict[str, str] = {}  # ページキー -> サムネイルパス
 
         # 動的グループボックス管理
-        self.dynamic_group_boxes: List[QtWidgets.QGroupBox] = []
-        self.dynamic_layouts: List[QtWidgets.QGridLayout] = []
+        self.dynamic_group_boxes: list[QtWidgets.QGroupBox] = []
+        self.dynamic_layouts: list[QtWidgets.QGridLayout] = []
 
         # 出力エリアを置き換え
         self.output_area = OutputArea()
@@ -146,8 +145,8 @@ class MainWindow(QMainWindow):
 
         # メニューバーの問題を修正（クリックのみで展開、オンマウス展開を無効化）
         # より安全なアプローチ：既存のメニューバーを直接制御
-        menu_bar = self.ui.menubar if hasattr(self.ui, 'menubar') else self.menuBar()
-        if hasattr(menu_bar, 'setNativeMenuBar'):
+        menu_bar = self.ui.menubar if hasattr(self.ui, "menubar") else self.menuBar()
+        if hasattr(menu_bar, "setNativeMenuBar"):
             menu_bar.setNativeMenuBar(False)
 
         # メニューバーでのマウスホバー自動展開を無効にするスタイル設定
@@ -172,7 +171,7 @@ class MainWindow(QMainWindow):
 
         # メニューの設定
         for menu in [self.ui.menuFile, self.ui.menuEdit, self.ui.menuTool, self.ui.menuHelp]:
-            if hasattr(menu, 'setTearOffEnabled'):
+            if hasattr(menu, "setTearOffEnabled"):
                 menu.setTearOffEnabled(False)
             # フォーカス外れたら自動的に閉じる設定
             menu.aboutToHide.connect(lambda: self.setFocus())
@@ -231,7 +230,7 @@ class MainWindow(QMainWindow):
         self.ui.actionRemovePage.triggered.connect(self.remove_selected_pages)
 
         # ツールメニュー
-        if hasattr(self.ui, 'actionBatchProcess'):
+        if hasattr(self.ui, "actionBatchProcess"):
             self.ui.actionBatchProcess.triggered.connect(self.open_batch_processor)
 
         # ヘルプメニュー
@@ -243,7 +242,7 @@ class MainWindow(QMainWindow):
 
         self.logger.debug("Signals connected")
 
-    def load_pdf_files(self, pdf_files: List[str]):
+    def load_pdf_files(self, pdf_files: list[str]):
         """PDFファイルを読み込み"""
         self.logger.info(f"Loading {len(pdf_files)} PDF files")
 
@@ -257,7 +256,7 @@ class MainWindow(QMainWindow):
 
         self.loader_thread.start()
 
-    def _on_file_loaded(self, file_path: str, pages: List[PDFPageInfo]):
+    def _on_file_loaded(self, file_path: str, pages: list[PDFPageInfo]):
         """ファイル読み込み完了時の処理（動的グループボックス対応）"""
         self.loaded_files[file_path] = pages
         self.logger.info(f"Loaded {file_path}: {len(pages)} pages")
@@ -348,7 +347,7 @@ class MainWindow(QMainWindow):
 
         # スプリッターによって高さが制御されるため、固定高さは設定しない
         # 代わりに最小高さのみを設定
-        if hasattr(self.ui, 'scrollAreaWidgetInputs'):
+        if hasattr(self.ui, "scrollAreaWidgetInputs"):
             self.ui.scrollAreaWidgetInputs.setMinimumHeight(160)  # 最小限の高さのみ
 
     def _update_inputs_scroll_area(self):
@@ -479,12 +478,7 @@ class MainWindow(QMainWindow):
 
     def open_files(self):
         """ファイルを開くダイアログ"""
-        files, _ = QFileDialog.getOpenFileNames(
-            self,
-            "PDFファイルを選択",
-            "",
-            "PDF Files (*.pdf)"
-        )
+        files, _ = QFileDialog.getOpenFileNames(self, "PDFファイルを選択", "", "PDF Files (*.pdf)")
         if files:
             self.load_pdf_files(files)
 
@@ -500,12 +494,7 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, "情報", "出力するページが選択されていません")
             return
 
-        file_path, _ = QFileDialog.getSaveFileName(
-            self,
-            "PDFファイルを保存",
-            "output.pdf",
-            "PDF Files (*.pdf)"
-        )
+        file_path, _ = QFileDialog.getSaveFileName(self, "PDFファイルを保存", "output.pdf", "PDF Files (*.pdf)")
 
         if file_path:
             try:
@@ -535,9 +524,7 @@ class MainWindow(QMainWindow):
         QMessageBox.about(
             self,
             "PDF-PageTool について",
-            "PDF-PageTool v0.1.0\n\n"
-            "PDFページの抽出・結合ツール\n"
-            "シンプルで直感的な操作を提供します。"
+            "PDF-PageTool v0.1.0\n\nPDFページの抽出・結合ツール\nシンプルで直感的な操作を提供します。",
         )
 
     def open_settings(self):
@@ -641,7 +628,7 @@ class MainWindow(QMainWindow):
                     self.theme_manager.apply_theme_to_widget(widget)
 
             # 出力エリアのページウィジェットにもテーマを適用
-            if hasattr(self, 'output_area') and self.output_area:
+            if hasattr(self, "output_area") and self.output_area:
                 self.theme_manager.apply_theme_to_widget(self.output_area)
 
             # 入力エリアのページウィジェットにもテーマを適用
@@ -673,7 +660,7 @@ class MainWindow(QMainWindow):
             # 各サムネイルウィジェットのページ情報に対してサムネイルを再生成
             for file_path, widgets_list in self.thumbnail_widgets.items():
                 for widget in widgets_list:
-                    if hasattr(widget, 'page_info'):
+                    if hasattr(widget, "page_info"):
                         page_info = widget.page_info
 
                         # 既存のサムネイルパスをクリア
@@ -681,9 +668,7 @@ class MainWindow(QMainWindow):
 
                         # 新しいサイズでサムネイルを生成
                         try:
-                            thumbnail_path = self.pdf_operations.generate_thumbnail(
-                                page_info, thumbnail_size
-                            )
+                            thumbnail_path = self.pdf_operations.generate_thumbnail(page_info, thumbnail_size)
                             page_info.thumbnail_path = thumbnail_path
 
                             # サムネイルウィジェットを更新
@@ -721,10 +706,11 @@ class MainWindow(QMainWindow):
             # 該当するサムネイルウィジェットを検索して更新
             for widgets_list in self.thumbnail_widgets.values():
                 for widget in widgets_list:
-                    if (hasattr(widget, 'page_info') and
-                        widget.page_info.source_file == page_info.source_file and
-                        widget.page_info.page_number == page_info.page_number):
-
+                    if (
+                        hasattr(widget, "page_info")
+                        and widget.page_info.source_file == page_info.source_file
+                        and widget.page_info.page_number == page_info.page_number
+                    ):
                         # ウィジェットサイズを更新
                         widget.setFixedSize(size, int(size * 1.375))
 
@@ -741,13 +727,13 @@ class MainWindow(QMainWindow):
         """新しいサムネイルサイズに合わせてレイアウトを更新"""
         try:
             # 出力エリアのレイアウト更新
-            if hasattr(self, 'output_area') and hasattr(self.output_area, 'update_thumbnail_sizes'):
+            if hasattr(self, "output_area") and hasattr(self.output_area, "update_thumbnail_sizes"):
                 self.output_area.update_thumbnail_sizes(size)
 
             # 上部パネルの各PDFエリアのレイアウト更新
-            if hasattr(self.ui, 'scrollAreaPDF1'):
+            if hasattr(self.ui, "scrollAreaPDF1"):
                 self._update_input_area_layout(self.ui.scrollAreaPDF1, size)
-            if hasattr(self.ui, 'scrollAreaPDF2'):
+            if hasattr(self.ui, "scrollAreaPDF2"):
                 self._update_input_area_layout(self.ui.scrollAreaPDF2, size)
 
             # 動的に作成されたグループボックスのレイアウト更新
@@ -764,9 +750,9 @@ class MainWindow(QMainWindow):
     def _update_input_area_layout(self, scroll_area, size: int):
         """入力エリアのレイアウトを更新"""
         try:
-            if hasattr(scroll_area, 'widget'):
+            if hasattr(scroll_area, "widget"):
                 widget = scroll_area.widget()
-                if widget and hasattr(widget, 'layout'):
+                if widget and hasattr(widget, "layout"):
                     layout = widget.layout()
                     if layout:
                         # レイアウトの再計算を強制
@@ -778,7 +764,7 @@ class MainWindow(QMainWindow):
     def _force_layout_update(self, widget):
         """ウィジェットのレイアウト更新を強制"""
         try:
-            if widget and hasattr(widget, 'layout'):
+            if widget and hasattr(widget, "layout"):
                 layout = widget.layout()
                 if layout:
                     # レイアウトを無効化して再計算を強制
@@ -852,7 +838,7 @@ class MainWindow(QMainWindow):
                         file_path = url.toLocalFile()
                         self.logger.info(f"  Local file path: {file_path}")
                         self.logger.info(f"  Is PDF: {file_path.lower().endswith('.pdf')}")
-                        if file_path.lower().endswith('.pdf'):
+                        if file_path.lower().endswith(".pdf"):
                             pdf_files.append(file_path)
 
                 if pdf_files:
@@ -885,7 +871,7 @@ class MainWindow(QMainWindow):
             for url in mime_data.urls():
                 if url.isLocalFile():
                     file_path = url.toLocalFile()
-                    if file_path.lower().endswith('.pdf'):
+                    if file_path.lower().endswith(".pdf"):
                         files.append(file_path)
 
             if files:
@@ -905,10 +891,11 @@ class MainWindow(QMainWindow):
             # 確認ダイアログ表示（設定で有効な場合）
             if self.settings_manager.get("confirm_exit", True):
                 reply = QMessageBox.question(
-                    self, "終了確認",
+                    self,
+                    "終了確認",
                     "アプリケーションを終了しますか？",
                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                    QMessageBox.StandardButton.No
+                    QMessageBox.StandardButton.No,
                 )
                 if reply != QMessageBox.StandardButton.Yes:
                     event.ignore()
@@ -1037,6 +1024,6 @@ class MainWindow(QMainWindow):
             self.logger.error(f"Failed to force reapply theme: {e}")
 
 
-def create_main_window(pdf_files: List[str] | None = None, log_level: str = "INFO") -> MainWindow:
+def create_main_window(pdf_files: list[str] | None = None, log_level: str = "INFO") -> MainWindow:
     """メインウィンドウを作成"""
     return MainWindow(pdf_files, log_level)

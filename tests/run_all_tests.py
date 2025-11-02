@@ -22,8 +22,7 @@ def run_debug_tests():
     print("🔍 デバッグテスト実行中...")
     try:
         debug_script = project_root / "tests" / "debug" / "debug_test.py"
-        result = subprocess.run([sys.executable, str(debug_script)],
-                              capture_output=True, text=True, cwd=project_root)
+        result = subprocess.run([sys.executable, str(debug_script)], capture_output=True, text=True, cwd=project_root)
 
         print("--- デバッグテスト結果 ---")
         print(result.stdout)
@@ -48,8 +47,7 @@ def run_unit_tests():
         tests_total += 1
         try:
             print(f"  実行中: {test_file.name}")
-            result = subprocess.run([sys.executable, str(test_file)],
-                                  capture_output=True, text=True, cwd=project_root)
+            result = subprocess.run([sys.executable, str(test_file)], capture_output=True, text=True, cwd=project_root)
 
             if result.returncode == 0:
                 print(f"  ✅ {test_file.name} - 成功")
@@ -78,8 +76,7 @@ def run_integration_tests():
         tests_total += 1
         try:
             print(f"  実行中: {test_file.name}")
-            result = subprocess.run([sys.executable, str(test_file)],
-                                  capture_output=True, text=True, cwd=project_root)
+            result = subprocess.run([sys.executable, str(test_file)], capture_output=True, text=True, cwd=project_root)
 
             if result.returncode == 0:
                 print(f"  ✅ {test_file.name} - 成功")

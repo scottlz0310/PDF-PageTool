@@ -94,7 +94,7 @@ class Ui_MainWindow:
         self.statusbar.setObjectName("statusbar")
         self.labelZoom = QtWidgets.QLabel(parent=self.statusbar)
         self.labelZoom.setGeometry(QtCore.QRect(1100, 0, 100, 22))
-        self.labelZoom.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.labelZoom.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.labelZoom.setObjectName("labelZoom")
         MainWindow.setStatusBar(self.statusbar)
         self.actionOpen = QtGui.QAction(parent=MainWindow)

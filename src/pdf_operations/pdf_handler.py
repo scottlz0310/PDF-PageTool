@@ -6,7 +6,6 @@ PDFファイルの読み込み、ページ抽出、結合、回転などの基�
 
 import os
 from pathlib import Path
-from typing import List, Tuple
 
 try:
     from PyPDF2 import PdfReader, PdfWriter
@@ -37,7 +36,7 @@ class PDFPageInfo:
     def __init__(self, source_file: str, page_number: int, rotation: int = 0):
         """
         PDFページ情報を初期化
-        
+
         Args:
             source_file: ソースPDFファイルのパス
             page_number: ページ番号（0始まり）
@@ -58,7 +57,7 @@ class PDFOperations:
     def __init__(self, log_level: str = "INFO"):
         """
         PDF操作クラスを初期化
-        
+
         Args:
             log_level: ログレベル
         """
@@ -87,13 +86,13 @@ class PDFOperations:
             self.logger.error(f"Failed to create temporary directory: {e}")
             raise
 
-    def load_pdf(self, file_path: str) -> List[PDFPageInfo]:
+    def load_pdf(self, file_path: str) -> list[PDFPageInfo]:
         """
         PDFファイルを読み込み、ページ情報のリストを返す
-        
+
         Args:
             file_path: PDFファイルのパス
-            
+
         Returns:
             PDFPageInfoのリスト
         """
@@ -104,7 +103,7 @@ class PDFOperations:
                 raise FileNotFoundError(f"PDF file not found: {file_path}")
 
             # PyPDF2でページ数を取得
-            with open(file_path, 'rb') as file:
+            with open(file_path, "rb") as file:
                 reader = PdfReader(file)
                 page_count = len(reader.pages)
 
@@ -122,14 +121,14 @@ class PDFOperations:
             self.logger.error(f"Failed to load PDF: {e}")
             raise
 
-    def generate_thumbnail(self, page_info: PDFPageInfo, size: Tuple[int, int] = (150, 200)) -> str:
+    def generate_thumbnail(self, page_info: PDFPageInfo, size: tuple[int, int] = (150, 200)) -> str:
         """
         PDFページのサムネイルを生成
-        
+
         Args:
             page_info: PDFページ情報
             size: サムネイルサイズ (width, height)
-            
+
         Returns:
             サムネイル画像ファイルのパス
         """
@@ -151,7 +150,7 @@ class PDFOperations:
                 page_info.source_file,
                 first_page=page_info.page_number + 1,
                 last_page=page_info.page_number + 1,
-                dpi=100
+                dpi=100,
             )
 
             if not images:
@@ -185,7 +184,7 @@ class PDFOperations:
     def rotate_page(self, page_info: PDFPageInfo, angle: int):
         """
         ページの回転角度を設定
-        
+
         Args:
             page_info: PDFページ情報
             angle: 回転角度（90の倍数）
@@ -199,10 +198,10 @@ class PDFOperations:
 
         self.logger.debug(f"Page rotation set to {angle} degrees for {page_info}")
 
-    def merge_pages(self, pages: List[PDFPageInfo], output_path: str):
+    def merge_pages(self, pages: list[PDFPageInfo], output_path: str):
         """
         指定されたページを結合してPDFファイルを作成
-        
+
         Args:
             pages: 結合するページのリスト
             output_path: 出力PDFファイルのパス
@@ -216,7 +215,7 @@ class PDFOperations:
                 self.logger.debug(f"Adding {page_info}")
 
                 # ソースPDFを読み込み
-                with open(page_info.source_file, 'rb') as file:
+                with open(page_info.source_file, "rb") as file:
                     reader = PdfReader(file)
                     page = reader.pages[page_info.page_number]
 
@@ -227,7 +226,7 @@ class PDFOperations:
                     writer.add_page(page)
 
             # 出力ファイルに書き込み
-            with open(output_path, 'wb') as output_file:
+            with open(output_path, "wb") as output_file:
                 writer.write(output_file)
 
             self.logger.info(f"Successfully merged PDF: {output_path}")
@@ -241,6 +240,7 @@ class PDFOperations:
         try:
             if self.temp_dir and os.path.exists(self.temp_dir):
                 import shutil
+
                 shutil.rmtree(self.temp_dir)
                 self.logger.debug(f"Cleaned up temporary directory: {self.temp_dir}")
         except Exception as e:

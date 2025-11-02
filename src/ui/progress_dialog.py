@@ -4,8 +4,6 @@ Progress Dialog Module
 進行状況表示とキャンセル機能付きダイアログ
 """
 
-from typing import Optional
-
 from PyQt6 import QtCore
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtWidgets import (
@@ -189,11 +187,12 @@ class ProgressManager:
 
     def __init__(self, parent=None):
         self.parent = parent
-        self.dialog: Optional[ProgressDialog] = None
+        self.dialog: ProgressDialog | None = None
         self.logger = get_logger("ProgressManager")
 
-    def start_progress(self, title: str = "処理中...", cancelable: bool = True,
-                      auto_close: bool = True) -> ProgressDialog:
+    def start_progress(
+        self, title: str = "処理中...", cancelable: bool = True, auto_close: bool = True
+    ) -> ProgressDialog:
         """プログレス表示開始"""
         if self.dialog:
             self.end_progress()

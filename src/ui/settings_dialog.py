@@ -4,7 +4,7 @@ Settings Dialog Module
 アプリケーション設定ダイアログ
 """
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt, pyqtSignal
@@ -34,7 +34,7 @@ class SettingsDialog(QDialog):
 
     settings_changed = pyqtSignal(dict)  # 設定変更時のシグナル
 
-    def __init__(self, current_settings: Dict[str, Any], parent: Optional[QtWidgets.QWidget] = None):
+    def __init__(self, current_settings: dict[str, Any], parent: QtWidgets.QWidget | None = None):
         super().__init__(parent)
         self.logger = get_logger("SettingsDialog")
         self.current_settings = current_settings.copy()
@@ -203,8 +203,7 @@ class SettingsDialog(QDialog):
         # Waylandドラッグ&ドロップ問題の回避策
         self.show_file_selection_button_check = QCheckBox("ファイル選択ボタンを表示（ドラッグ&ドロップ代替手段）")
         self.show_file_selection_button_check.setToolTip(
-            "Wayland環境でドラッグ&ドロップが機能しない場合の代替手段として、\n"
-            "ファイル選択ボタンを表示します"
+            "Wayland環境でドラッグ&ドロップが機能しない場合の代替手段として、\nファイル選択ボタンを表示します"
         )
         display_layout.addWidget(self.show_file_selection_button_check)
 
@@ -319,9 +318,7 @@ class SettingsDialog(QDialog):
 
     def _browse_output_folder(self):
         """出力フォルダ選択"""
-        folder = QFileDialog.getExistingDirectory(
-            self, "出力フォルダを選択", self.output_folder_edit.text()
-        )
+        folder = QFileDialog.getExistingDirectory(self, "出力フォルダを選択", self.output_folder_edit.text())
         if folder:
             self.output_folder_edit.setText(folder)
 
@@ -404,10 +401,11 @@ class SettingsDialog(QDialog):
     def _reset_to_defaults(self):
         """デフォルト設定に戻す"""
         reply = QMessageBox.question(
-            self, "設定をリセット",
+            self,
+            "設定をリセット",
             "すべての設定をデフォルトに戻しますか？",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-            QMessageBox.StandardButton.No
+            QMessageBox.StandardButton.No,
         )
 
         if reply == QMessageBox.StandardButton.Yes:
@@ -435,7 +433,7 @@ class SettingsDialog(QDialog):
             "log_level": "INFO",
             "log_to_file": True,
             "hardware_acceleration": False,
-            "preview_mode": False
+            "preview_mode": False,
         }
 
     def _accept_settings(self):

@@ -31,7 +31,7 @@ from src.pdf_operations import PDFOperations, PDFPageInfo
 class TestPDFOperations(unittest.TestCase):
     def setUp(self):
         self.pdf_ops = PDFOperations(log_level="ERROR")
-    
+
     def test_load_pdf_success(self):
         """PDFファイル読み込み成功テスト"""
         with patch('os.path.exists', return_value=True):
@@ -39,7 +39,7 @@ class TestPDFOperations(unittest.TestCase):
                 mock_reader.return_value.pages = [Mock(), Mock()]
                 pages = self.pdf_ops.load_pdf("test.pdf")
                 self.assertEqual(len(pages), 2)
-    
+
     def test_load_pdf_file_not_found(self):
         """PDFファイル未存在エラーテスト"""
         with self.assertRaises(FileNotFoundError):
@@ -58,7 +58,7 @@ class TestMainWindowIntegration(unittest.TestCase):
     def setUp(self):
         self.app = QApplication([])
         self.main_window = MainWindow(log_level="ERROR")
-    
+
     def test_load_pdf_files_integration(self):
         """PDFファイル読み込み統合テスト"""
         test_files = ["test1.pdf", "test2.pdf"]
@@ -79,23 +79,23 @@ class TestMainWindowUI(unittest.TestCase):
     def setUp(self):
         self.app = QApplication([])
         self.main_window = MainWindow()
-    
+
     def test_menu_actions(self):
         """メニューアクションテスト"""
         # ファイルメニューのテスト
         QTest.mouseClick(self.main_window.ui.actionOpen, Qt.MouseButton.LeftButton)
         # ダイアログが開かれることを確認
-    
+
     def test_drag_drop(self):
         """ドラッグ&ドロップテスト"""
         mime_data = QMimeData()
         mime_data.setUrls([QUrl.fromLocalFile("test.pdf")])
-        
+
         drag_event = QDragEnterEvent(
-            QPoint(0, 0), Qt.DropAction.CopyAction, mime_data, 
+            QPoint(0, 0), Qt.DropAction.CopyAction, mime_data,
             Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier
         )
-        
+
         self.main_window.dragEnterEvent(drag_event)
         self.assertTrue(drag_event.isAccepted())
 ```
@@ -128,7 +128,7 @@ class TestDataManager:
     def create_test_pdf(pages: int = 1) -> str:
         """テスト用PDFファイルを作成"""
         from reportlab.pdfgen import canvas
-        
+
         filename = f"test_{pages}pages.pdf"
         c = canvas.Canvas(filename)
         for i in range(pages):
@@ -136,7 +136,7 @@ class TestDataManager:
             c.showPage()
         c.save()
         return filename
-    
+
     @staticmethod
     def cleanup_test_files():
         """テストファイルをクリーンアップ"""
@@ -157,14 +157,14 @@ class TestPerformance(unittest.TestCase):
         """メモリ使用量テスト"""
         process = psutil.Process(os.getpid())
         initial_memory = process.memory_info().rss
-        
+
         # 大量のPDFファイルを読み込み
         large_files = [f"large_file_{i}.pdf" for i in range(10)]
         self.main_window.load_pdf_files(large_files)
-        
+
         final_memory = process.memory_info().rss
         memory_increase = final_memory - initial_memory
-        
+
         # メモリ使用量が閾値以下であることを確認
         self.assertLess(memory_increase, 100 * 1024 * 1024)  # 100MB
 ```
@@ -186,10 +186,10 @@ def run_all_tests():
     """全テストを実行"""
     loader = unittest.TestLoader()
     suite = loader.discover('tests', pattern='test_*.py')
-    
+
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)
-    
+
     return result.wasSuccessful()
 
 if __name__ == '__main__':
@@ -219,7 +219,7 @@ mypy src/
 # .coveragerc
 [run]
 source = src/
-omit = 
+omit =
     */tests/*
     */venv/*
     */build/*

@@ -192,6 +192,6 @@ PyPIパッケージ `qt-theme-manager` の統合により、PDF-PageToolのテ�
 
 ---
 
-**作成者**: GitHub Copilot  
-**作成日**: 2025年7月18日  
+**作成者**: GitHub Copilot
+**作成日**: 2025年7月18日
 **バージョン**: 1.0

@@ -12,6 +12,7 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
+
 def test_settings_dialog():
     """設定ダイアログのテスト"""
     print("=== 設定ダイアログテスト ===")
@@ -41,6 +42,7 @@ def test_settings_dialog():
     except Exception as e:
         print(f"❌ 設定ダイアログエラー: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -64,12 +66,12 @@ def test_main_window():
         print("✅ メインウィンドウ作成成功（引数なし）")
 
         # メニューバーの確認
-        if hasattr(main_window.ui, 'menubar'):
+        if hasattr(main_window.ui, "menubar"):
             menu_bar = main_window.ui.menubar
             print(f"✅ メニューバー存在確認: {type(menu_bar)}")
 
         # ネイティブメニューバー設定確認
-        if hasattr(menu_bar, 'isNativeMenuBar'):
+        if hasattr(menu_bar, "isNativeMenuBar"):
             is_native = menu_bar.isNativeMenuBar()
             print(f"📋 ネイティブメニューバー設定: {is_native}")
 
@@ -89,6 +91,7 @@ def test_main_window():
     except Exception as e:
         print(f"❌ メインウィンドウエラー: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -102,7 +105,7 @@ def test_log_level():
         from src.utils.settings_manager import SettingsManager
 
         settings = SettingsManager()
-        default_log_level = settings.get('log_level')
+        default_log_level = settings.get("log_level")
 
         print(f"📋 デフォルトログレベル: {default_log_level}")
 

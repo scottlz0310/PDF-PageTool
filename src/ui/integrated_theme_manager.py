@@ -6,7 +6,6 @@ PyPIパッケージ (qt-theme-manager) を使用したテーマ管理システ�
 import json
 import os
 from pathlib import Path
-from typing import Dict, Optional
 
 from PyQt6.QtCore import QObject, pyqtSignal
 from PyQt6.QtWidgets import QApplication, QWidget
@@ -46,7 +45,7 @@ class PDFPageToolThemeManager(QObject):
             logger.warning("qt-theme-manager not available, using fallback theme system")
 
         # 設定マネージャーとの連携
-        self._current_theme = str(self.settings_manager.get('theme', 'light'))
+        self._current_theme = str(self.settings_manager.get("theme", "light"))
 
         # テーマ設定ファイルを初期化
         self._initialize_theme_config()
@@ -80,16 +79,12 @@ class PDFPageToolThemeManager(QObject):
                             "text": "#212529",
                             "hover": "#007acc",
                             "pressed": "#0056b3",
-                            "border": "#ced4da"
+                            "border": "#ced4da",
                         },
                         "panel": {
                             "background": "#ffffff",
                             "border": "#dee2e6",
-                            "header": {
-                                "background": "#f8f9fa",
-                                "text": "#212529",
-                                "border": "#dee2e6"
-                            }
+                            "header": {"background": "#f8f9fa", "text": "#212529", "border": "#dee2e6"},
                         },
                         "text": {
                             "primary": "#212529",
@@ -99,26 +94,22 @@ class PDFPageToolThemeManager(QObject):
                             "link": "#007acc",
                             "success": "#28a745",
                             "warning": "#ffc107",
-                            "error": "#dc3545"
+                            "error": "#dc3545",
                         },
                         "input": {
                             "background": "#ffffff",
                             "text": "#212529",
                             "border": "#ced4da",
                             "focus": "#007acc",
-                            "placeholder": "#6c757d"
+                            "placeholder": "#6c757d",
                         },
                         "menu": {
                             "background": "#ffffff",
                             "text": "#212529",
                             "hover": "#f8f9fa",
-                            "separator": "#dee2e6"
+                            "separator": "#dee2e6",
                         },
-                        "scrollbar": {
-                            "background": "#f8f9fa",
-                            "handle": "#ced4da",
-                            "handleHover": "#adb5bd"
-                        }
+                        "scrollbar": {"background": "#f8f9fa", "handle": "#ced4da", "handleHover": "#adb5bd"},
                     },
                     "dark": {
                         "name": "dark",
@@ -133,16 +124,12 @@ class PDFPageToolThemeManager(QObject):
                             "text": "#ffffff",
                             "hover": "#0078d4",
                             "pressed": "#106ebe",
-                            "border": "#555555"
+                            "border": "#555555",
                         },
                         "panel": {
                             "background": "#2b2b2b",
                             "border": "#404040",
-                            "header": {
-                                "background": "#3c3c3c",
-                                "text": "#ffffff",
-                                "border": "#404040"
-                            }
+                            "header": {"background": "#3c3c3c", "text": "#ffffff", "border": "#404040"},
                         },
                         "text": {
                             "primary": "#ffffff",
@@ -152,26 +139,22 @@ class PDFPageToolThemeManager(QObject):
                             "link": "#0078d4",
                             "success": "#107c10",
                             "warning": "#ffb900",
-                            "error": "#d13438"
+                            "error": "#d13438",
                         },
                         "input": {
                             "background": "#3c3c3c",
                             "text": "#ffffff",
                             "border": "#555555",
                             "focus": "#0078d4",
-                            "placeholder": "#b0b0b0"
+                            "placeholder": "#b0b0b0",
                         },
                         "menu": {
                             "background": "#2b2b2b",
                             "text": "#ffffff",
                             "hover": "#3c3c3c",
-                            "separator": "#404040"
+                            "separator": "#404040",
                         },
-                        "scrollbar": {
-                            "background": "#3c3c3c",
-                            "handle": "#555555",
-                            "handleHover": "#666666"
-                        }
+                        "scrollbar": {"background": "#3c3c3c", "handle": "#555555", "handleHover": "#666666"},
                     },
                     "blue": {
                         "name": "blue",
@@ -186,16 +169,12 @@ class PDFPageToolThemeManager(QObject):
                             "text": "#000080",
                             "hover": "#0066cc",
                             "pressed": "#0052a3",
-                            "border": "#99d6ff"
+                            "border": "#99d6ff",
                         },
                         "panel": {
                             "background": "#f0f8ff",
                             "border": "#b3d9ff",
-                            "header": {
-                                "background": "#e6f3ff",
-                                "text": "#000080",
-                                "border": "#b3d9ff"
-                            }
+                            "header": {"background": "#e6f3ff", "text": "#000080", "border": "#b3d9ff"},
                         },
                         "text": {
                             "primary": "#000080",
@@ -205,26 +184,22 @@ class PDFPageToolThemeManager(QObject):
                             "link": "#0066cc",
                             "success": "#228b22",
                             "warning": "#ff8c00",
-                            "error": "#dc143c"
+                            "error": "#dc143c",
                         },
                         "input": {
                             "background": "#ffffff",
                             "text": "#000080",
                             "border": "#99d6ff",
                             "focus": "#0066cc",
-                            "placeholder": "#4169e1"
+                            "placeholder": "#4169e1",
                         },
                         "menu": {
                             "background": "#f0f8ff",
                             "text": "#000080",
                             "hover": "#e6f3ff",
-                            "separator": "#b3d9ff"
+                            "separator": "#b3d9ff",
                         },
-                        "scrollbar": {
-                            "background": "#e6f3ff",
-                            "handle": "#99d6ff",
-                            "handleHover": "#66ccff"
-                        }
+                        "scrollbar": {"background": "#e6f3ff", "handle": "#99d6ff", "handleHover": "#66ccff"},
                     },
                     "green": {
                         "name": "green",
@@ -239,16 +214,12 @@ class PDFPageToolThemeManager(QObject):
                             "text": "#006400",
                             "hover": "#228b22",
                             "pressed": "#1c7a1c",
-                            "border": "#99ff99"
+                            "border": "#99ff99",
                         },
                         "panel": {
                             "background": "#f0fff0",
                             "border": "#b3ffb3",
-                            "header": {
-                                "background": "#e6ffe6",
-                                "text": "#006400",
-                                "border": "#b3ffb3"
-                            }
+                            "header": {"background": "#e6ffe6", "text": "#006400", "border": "#b3ffb3"},
                         },
                         "text": {
                             "primary": "#006400",
@@ -258,32 +229,28 @@ class PDFPageToolThemeManager(QObject):
                             "link": "#228b22",
                             "success": "#228b22",
                             "warning": "#ff8c00",
-                            "error": "#dc143c"
+                            "error": "#dc143c",
                         },
                         "input": {
                             "background": "#ffffff",
                             "text": "#006400",
                             "border": "#99ff99",
                             "focus": "#228b22",
-                            "placeholder": "#228b22"
+                            "placeholder": "#228b22",
                         },
                         "menu": {
                             "background": "#f0fff0",
                             "text": "#006400",
                             "hover": "#e6ffe6",
-                            "separator": "#b3ffb3"
+                            "separator": "#b3ffb3",
                         },
-                        "scrollbar": {
-                            "background": "#e6ffe6",
-                            "handle": "#99ff99",
-                            "handleHover": "#66ff66"
-                        }
-                    }
-                }
+                        "scrollbar": {"background": "#e6ffe6", "handle": "#99ff99", "handleHover": "#66ff66"},
+                    },
+                },
             }
 
             try:
-                with open(self.theme_config_path, 'w', encoding='utf-8') as f:
+                with open(self.theme_config_path, "w", encoding="utf-8") as f:
                     json.dump(default_config, f, indent=2, ensure_ascii=False)
                 logger.info(f"Default theme config created: {self.theme_config_path}")
             except Exception as e:
@@ -294,12 +261,12 @@ class PDFPageToolThemeManager(QObject):
         if self._current_theme:
             self.set_theme(self._current_theme)
 
-    def get_available_themes(self) -> Dict[str, str]:
+    def get_available_themes(self) -> dict[str, str]:
         """利用可能なテーマのリストを取得"""
         try:
             if self.theme_controller:
                 themes = self.theme_controller.get_available_themes()
-                return {name: config.get('display_name', name) for name, config in themes.items()}
+                return {name: config.get("display_name", name) for name, config in themes.items()}
         except Exception as e:
             logger.error(f"Failed to get available themes: {e}")
         return {"light": "ライト", "dark": "ダーク"}
@@ -317,7 +284,7 @@ class PDFPageToolThemeManager(QObject):
                 self._current_theme = theme_name
 
                 # 設定マネージャーにも保存
-                self.settings_manager.set('theme', theme_name)
+                self.settings_manager.set("theme", theme_name)
 
                 # アプリケーションにテーマを適用
                 self.apply_theme_to_application()
@@ -331,7 +298,7 @@ class PDFPageToolThemeManager(QObject):
                 # フォールバック: 基本的なテーマ設定
                 old_theme = self._current_theme
                 self._current_theme = theme_name
-                self.settings_manager.set('theme', theme_name)
+                self.settings_manager.set("theme", theme_name)
                 self.theme_changed.emit(theme_name)
                 logger.info(f"Theme changed (fallback) from '{old_theme}' to '{theme_name}'")
                 return True
@@ -372,7 +339,7 @@ class PDFPageToolThemeManager(QObject):
                 pass
             return False
 
-    def apply_theme_to_application(self, app: Optional[QApplication] = None) -> bool:
+    def apply_theme_to_application(self, app: QApplication | None = None) -> bool:
         """アプリケーション全体にテーマを適用"""
         try:
             if app is None:
@@ -405,7 +372,7 @@ class PDFPageToolThemeManager(QObject):
             logger.error(f"Failed to apply theme to widget: {e}")
             return False
 
-    def get_theme_stylesheet(self, theme_name: Optional[str] = None) -> str:
+    def get_theme_stylesheet(self, theme_name: str | None = None) -> str:
         """テーマのスタイルシートを取得"""
         try:
             if self.theme_controller:
@@ -424,14 +391,14 @@ class PDFPageToolThemeManager(QObject):
             logger.error(f"Failed to get theme stylesheet: {e}")
             return self._get_fallback_stylesheet()
 
-    def export_theme_qss(self, output_path: str, theme_name: Optional[str] = None) -> bool:
+    def export_theme_qss(self, output_path: str, theme_name: str | None = None) -> bool:
         """テーマのQSSファイルをエクスポート"""
         try:
             if self.theme_controller:
                 return self.theme_controller.export_qss(output_path, theme_name)
             else:
                 # フォールバック: 基本スタイルシートをエクスポート
-                with open(output_path, 'w', encoding='utf-8') as f:
+                with open(output_path, "w", encoding="utf-8") as f:
                     f.write(self._get_fallback_stylesheet())
                 return True
         except Exception as e:
@@ -450,7 +417,7 @@ class PDFPageToolThemeManager(QObject):
 
     def _get_fallback_stylesheet(self) -> str:
         """フォールバック用の基本スタイルシートを取得"""
-        if self._current_theme == 'dark':
+        if self._current_theme == "dark":
             return """
                 QWidget {
                     background-color: #2b2b2b;
@@ -501,10 +468,10 @@ class PDFPageToolThemeManager(QObject):
 
 
 # シングルトンインスタンス
-_theme_manager_instance: Optional[PDFPageToolThemeManager] = None
+_theme_manager_instance: PDFPageToolThemeManager | None = None
 
 
-def get_integrated_theme_manager(settings_manager: Optional[SettingsManager] = None) -> PDFPageToolThemeManager:
+def get_integrated_theme_manager(settings_manager: SettingsManager | None = None) -> PDFPageToolThemeManager:
     """統合テーママネージャーのシングルトンインスタンスを取得"""
     global _theme_manager_instance
 
@@ -516,7 +483,7 @@ def get_integrated_theme_manager(settings_manager: Optional[SettingsManager] = N
     return _theme_manager_instance
 
 
-def apply_theme_to_widget_simple(widget: QWidget, theme_name: Optional[str] = None) -> bool:
+def apply_theme_to_widget_simple(widget: QWidget, theme_name: str | None = None) -> bool:
     """ウィジェットにテーマを適用する簡単な関数"""
     try:
         theme_manager = get_integrated_theme_manager()
@@ -537,7 +504,7 @@ def apply_theme_to_widget_simple(widget: QWidget, theme_name: Optional[str] = No
     return False
 
 
-def apply_theme_to_application_simple(app: Optional[QApplication] = None, theme_name: Optional[str] = None) -> bool:
+def apply_theme_to_application_simple(app: QApplication | None = None, theme_name: str | None = None) -> bool:
     """アプリケーションにテーマを適用する簡単な関数"""
     try:
         theme_manager = get_integrated_theme_manager()

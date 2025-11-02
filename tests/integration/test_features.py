@@ -64,7 +64,7 @@ def test_pdf_merge():
 
         logger.info(f"結合するページ数: {len(merge_pages)}")
         for i, page in enumerate(merge_pages):
-            logger.info(f"  {i+1}: {page}")
+            logger.info(f"  {i + 1}: {page}")
 
         # 出力ファイル名
         output_file = "test_output.pdf"
@@ -162,9 +162,9 @@ def main():
     total = len(tests)
 
     for test_name, test_func in tests:
-        logger.info(f"\n{'='*50}")
+        logger.info(f"\n{'=' * 50}")
         logger.info(f"テスト実行: {test_name}")
-        logger.info(f"{'='*50}")
+        logger.info(f"{'=' * 50}")
 
         try:
             if test_func():
@@ -175,9 +175,9 @@ def main():
         except Exception as e:
             logger.error(f"❌ {test_name}: 例外発生 - {e}")
 
-    logger.info(f"\n{'='*50}")
+    logger.info(f"\n{'=' * 50}")
     logger.info(f"テスト結果: {passed}/{total} 成功")
-    logger.info(f"{'='*50}")
+    logger.info(f"{'=' * 50}")
 
     return passed == total
 

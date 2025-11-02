@@ -44,7 +44,7 @@ def get_instance():
 ```python
 class PDFLoaderThread(QThread):
     file_loaded = pyqtSignal(str, list)
-    
+
     def run(self):
         # 処理完了時にシグナル発行
         self.file_loaded.emit(file_path, pages)

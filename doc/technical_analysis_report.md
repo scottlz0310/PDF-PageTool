@@ -76,7 +76,7 @@ src/ui/
 class PDFPageToolThemeManager(QObject):
     # シグナル
     theme_changed = pyqtSignal(str)
-    
+
     # 主要メソッド
     def __init__(self, settings_manager)
     def get_available_themes(self) -> Dict[str, str]
@@ -234,6 +234,6 @@ from src.utils.settings_manager import SettingsManager
 
 ---
 
-**技術分析者**: GitHub Copilot  
-**分析日**: 2025年7月18日  
+**技術分析者**: GitHub Copilot
+**分析日**: 2025年7月18日
 **分析バージョン**: 1.0

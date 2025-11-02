@@ -3,7 +3,7 @@
 ## 事前準備
 
 ### 1. Pythonのインストール
-- Python 3.8以上が必要です
+- Python 3.11以上が必要です
 - [Python公式サイト](https://www.python.org/downloads/)からダウンロード
 
 ### 2. システム依存関係（pdf2image用）
@@ -86,15 +86,15 @@ pdf2image.exceptions.PDFInfoNotInstalledError
 ```
 ERROR: Could not find a version that satisfies the requirement PyQt6
 ```
-**解決方法**: 
-- Pythonバージョンを確認（3.8以上必要）
+**解決方法**:
+- Pythonバージョンを確認（3.11以上必要）
 - pipを最新版に更新: `pip install --upgrade pip`
 
 ### メモリエラー
 ```
 MemoryError: cannot allocate memory
 ```
-**解決方法**: 
+**解決方法**:
 - 大きなPDFファイルを処理する際は、サムネイルサイズを小さく設定
 - 一度に処理するページ数を制限
 

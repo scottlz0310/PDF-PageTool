@@ -101,7 +101,7 @@ def test_file_operations():
         "src/ui/page_widgets.py",
         "src/pdf_operations/pdf_handler.py",
         "doc/bug_report_template.md",
-        "doc/known_issues.md"
+        "doc/known_issues.md",
     ]
 
     print("\n重要ファイルの確認:")
@@ -197,7 +197,7 @@ def test_shortcut_system():
         def test_action():
             print("テストアクション実行")
 
-        shortcut_manager.register_action('test_action', test_action, 'Ctrl+T')
+        shortcut_manager.register_action("test_action", test_action, "Ctrl+T")
         print("テストアクション登録完了")
 
         help_text = shortcut_manager.get_shortcut_help_text()

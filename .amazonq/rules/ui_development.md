@@ -24,7 +24,7 @@ layout.update()
 ```python
 def dragEnterEvent(self, event: QDragEnterEvent):
     if event.mimeData().hasUrls():
-        pdf_files = [url.toLocalFile() for url in event.mimeData().urls() 
+        pdf_files = [url.toLocalFile() for url in event.mimeData().urls()
                     if url.toLocalFile().lower().endswith('.pdf')]
         if pdf_files:
             event.acceptProposedAction()
@@ -81,14 +81,14 @@ shortcuts = {
 ```python
 def generate_thumbnail(self, page_info: PDFPageInfo, size: Tuple[int, int] = (150, 200)) -> str:
     # pdf2imageでページを画像変換
-    images = convert_from_path(page_info.source_file, 
+    images = convert_from_path(page_info.source_file,
                               first_page=page_info.page_number + 1,
                               last_page=page_info.page_number + 1)
-    
+
     # サムネイルサイズにリサイズ
     image = images[0]
     image.thumbnail(size, Image.Resampling.LANCZOS)
-    
+
     # 一時ファイルに保存
     thumbnail_path = os.path.join(self.temp_dir, f"thumb_{uuid.uuid4()}.png")
     image.save(thumbnail_path, "PNG")
@@ -107,11 +107,11 @@ def generate_thumbnail(self, page_info: PDFPageInfo, size: Tuple[int, int] = (15
 def _create_dynamic_group_box(self, file_path: str, file_index: int):
     group_box = QtWidgets.QGroupBox(self.ui.scrollAreaWidgetInputs)
     group_box.setTitle(Path(file_path).name)
-    
+
     # レイアウト設定
     layout = QtWidgets.QGridLayout(group_box)
     layout.setSpacing(10)
-    
+
     # 親レイアウトに追加
     self.ui.horizontalLayoutInputs.addWidget(group_box)
     self.dynamic_group_boxes.append(group_box)
@@ -129,7 +129,7 @@ def _create_dynamic_group_box(self, file_path: str, file_index: int):
 class PDFLoaderThread(QThread):
     progress_updated = pyqtSignal(str, int, int)
     file_loaded = pyqtSignal(str, list)
-    
+
     def run(self):
         for i, file_path in enumerate(self.pdf_files):
             pages = self.load_pdf(file_path)

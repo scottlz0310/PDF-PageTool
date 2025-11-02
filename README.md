@@ -5,7 +5,7 @@
 PDF-PageToolは、直感的なUIと豊富な機能を持つモダンなPDFページ操作ツールです。複数のPDFファイルを同時に扱い、ページの結合・分割・並び替えを視覚的に操作できます。
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
+![Python](https://img.shields.io/badge/python-3.13%2B-blue.svg)
 ![PyQt6](https://img.shields.io/badge/GUI-PyQt6-green.svg)
 
 ## ✨ 主な機能
@@ -37,7 +37,7 @@ PDF-PageToolは、直感的なUIと豊富な機能を持つモダンなPDFペー
 
 ## 🖥️ システム要件
 
-- **Python**: 3.8以上
+- **Python**: 3.11以上
 - **OS**: Windows / macOS / Linux
 - **RAM**: 512MB以上推奨
 - **ディスク容量**: 100MB以上

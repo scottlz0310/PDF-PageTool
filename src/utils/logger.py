@@ -12,6 +12,7 @@ from pathlib import Path
 
 try:
     import colorlog
+
     HAS_COLORLOG = True
 except ImportError:
     HAS_COLORLOG = False
@@ -23,7 +24,7 @@ class PDFPageToolLogger:
     def __init__(self, name: str = "PDF-PageTool", log_level: str = "WARNING"):
         """
         ロガーを初期化します
-        
+
         Args:
             name: ロガー名
             log_level: ログレベル ("DEBUG", "VERBOSE", "INFO", "WARNING", "ERROR")
@@ -58,21 +59,20 @@ class PDFPageToolLogger:
         if HAS_COLORLOG:
             console_handler = colorlog.StreamHandler()
             console_format = colorlog.ColoredFormatter(
-                '%(log_color)s%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S',
+                "%(log_color)s%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S",
                 log_colors={
-                    'DEBUG': 'cyan',
-                    'INFO': 'green',
-                    'WARNING': 'yellow',
-                    'ERROR': 'red',
-                    'CRITICAL': 'red,bg_white',
-                }
+                    "DEBUG": "cyan",
+                    "INFO": "green",
+                    "WARNING": "yellow",
+                    "ERROR": "red",
+                    "CRITICAL": "red,bg_white",
+                },
             )
         else:
             console_handler = logging.StreamHandler()
             console_format = logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S'
+                "%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
             )
         console_handler.setFormatter(console_format)
         self.logger.addHandler(console_handler)
@@ -83,10 +83,10 @@ class PDFPageToolLogger:
             log_dir.mkdir(exist_ok=True)
 
             log_file = log_dir / f"pdf_pagetool_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
-            file_handler = logging.FileHandler(log_file, encoding='utf-8')
+            file_handler = logging.FileHandler(log_file, encoding="utf-8")
             file_format = logging.Formatter(
-                '%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s',
-                datefmt='%Y-%m-%d %H:%M:%S'
+                "%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S",
             )
             file_handler.setFormatter(file_format)
             self.logger.addHandler(file_handler)
@@ -119,11 +119,11 @@ class PDFPageToolLogger:
 def get_logger(name: str = "PDF-PageTool", log_level: str | None = None) -> PDFPageToolLogger:
     """
     ロガーインスタンスを取得します
-    
+
     Args:
         name: ロガー名
         log_level: ログレベル（環境変数LOG_LEVELが優先、デフォルトはWARNING）
-    
+
     Returns:
         PDFPageToolLoggerインスタンス
     """

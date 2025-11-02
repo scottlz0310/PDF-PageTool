@@ -41,7 +41,7 @@ python tests/debug/debug_test.py
 # ユニットテスト
 python tests/unit/test_official_theme_manager.py
 
-# 統合テスト  
+# 統合テスト
 python tests/integration/test_features.py
 python tests/integration/test_new_features.py
 python tests/integration/test_theme_functionality.py

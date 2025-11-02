@@ -8,7 +8,6 @@ import os
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Dict, List, Optional
 
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import QThread, pyqtSignal
@@ -35,6 +34,7 @@ from ..utils.logger import get_logger
 
 class BatchOperation(Enum):
     """バッチ操作の種類"""
+
     MERGE_ALL = "merge_all"
     SPLIT_ALL = "split_all"
     ROTATE_ALL = "rotate_all"
@@ -45,10 +45,11 @@ class BatchOperation(Enum):
 @dataclass
 class BatchJob:
     """バッチ処理ジョブ"""
+
     operation: BatchOperation
-    input_files: List[str]
+    input_files: list[str]
     output_directory: str
-    parameters: Dict[str, any]
+    parameters: dict[str, any]
     name: str = ""
 
 
@@ -133,10 +134,7 @@ class BatchProcessorThread(QThread):
         # 簡単な実装：各ファイルを個別に出力ディレクトリにコピー
         # 実際の結合は別途実装
         try:
-            output_path = os.path.join(
-                self.job.output_directory,
-                f"merged_{Path(file_path).stem}.pdf"
-            )
+            output_path = os.path.join(self.job.output_directory, f"merged_{Path(file_path).stem}.pdf")
 
             # PDFを読み込んで再保存（基本的な処理）
             pages = self.pdf_ops.load_pdf(file_path)
@@ -160,10 +158,7 @@ class BatchProcessorThread(QThread):
             success_count = 0
 
             for i, page in enumerate(pages):
-                output_path = os.path.join(
-                    self.job.output_directory,
-                    f"{base_name}_page_{i+1}.pdf"
-                )
+                output_path = os.path.join(self.job.output_directory, f"{base_name}_page_{i + 1}.pdf")
 
                 if self.pdf_ops.merge_pages([page], output_path):
                     success_count += 1
@@ -187,10 +182,7 @@ class BatchProcessorThread(QThread):
             for page in pages:
                 page.rotation = (page.rotation + angle) % 360
 
-            output_path = os.path.join(
-                self.job.output_directory,
-                f"rotated_{Path(file_path).name}"
-            )
+            output_path = os.path.join(self.job.output_directory, f"rotated_{Path(file_path).name}")
 
             return self.pdf_ops.merge_pages(pages, output_path)
 
@@ -213,10 +205,7 @@ class BatchProcessorThread(QThread):
 
             extracted_pages = pages[start_page:end_page]
 
-            output_path = os.path.join(
-                self.job.output_directory,
-                f"extracted_{Path(file_path).name}"
-            )
+            output_path = os.path.join(self.job.output_directory, f"extracted_{Path(file_path).name}")
 
             return self.pdf_ops.merge_pages(extracted_pages, output_path)
 
@@ -232,10 +221,7 @@ class BatchProcessorThread(QThread):
             if not pages:
                 return False
 
-            output_path = os.path.join(
-                self.job.output_directory,
-                f"optimized_{Path(file_path).name}"
-            )
+            output_path = os.path.join(self.job.output_directory, f"optimized_{Path(file_path).name}")
 
             return self.pdf_ops.merge_pages(pages, output_path)
 
@@ -403,9 +389,7 @@ class BatchProcessorDialog(QDialog):
 
     def _add_files(self):
         """ファイル追加"""
-        files, _ = QFileDialog.getOpenFileNames(
-            self, "PDFファイルを選択", "", "PDF files (*.pdf)"
-        )
+        files, _ = QFileDialog.getOpenFileNames(self, "PDFファイルを選択", "", "PDF files (*.pdf)")
         for file_path in files:
             self.file_list.addItem(file_path)
 
@@ -415,9 +399,7 @@ class BatchProcessorDialog(QDialog):
 
     def _browse_output_directory(self):
         """出力ディレクトリ選択"""
-        directory = QFileDialog.getExistingDirectory(
-            self, "出力ディレクトリを選択", self.output_dir_edit.text()
-        )
+        directory = QFileDialog.getExistingDirectory(self, "出力ディレクトリを選択", self.output_dir_edit.text())
         if directory:
             self.output_dir_edit.setText(directory)
 
@@ -458,7 +440,7 @@ class BatchProcessorDialog(QDialog):
                 input_files=input_files,
                 output_directory=self.output_dir_edit.text(),
                 parameters=parameters,
-                name=f"{operation.value}_{len(input_files)}files"
+                name=f"{operation.value}_{len(input_files)}files",
             )
 
             # UI状態変更
@@ -490,7 +472,7 @@ class BatchProcessorDialog(QDialog):
             self.processor_thread.stop()
             self.log_text.append("停止要求を送信しました...")
 
-    def _get_selected_operation(self) -> Optional[BatchOperation]:
+    def _get_selected_operation(self) -> BatchOperation | None:
         """選択された操作を取得"""
         if self.merge_radio.isChecked():
             return BatchOperation.MERGE_ALL

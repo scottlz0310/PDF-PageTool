@@ -6,7 +6,7 @@ Settings Manager Module
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 from ..utils.logger import get_logger
 
@@ -26,15 +26,15 @@ class SettingsManager:
     def _get_settings_file_path(self) -> Path:
         """設定ファイルのパスを取得"""
         # OSに応じた適切な設定ディレクトリを選択
-        if os.name == 'nt':  # Windows
-            config_dir = Path(os.environ.get('APPDATA', '')) / self.app_name
+        if os.name == "nt":  # Windows
+            config_dir = Path(os.environ.get("APPDATA", "")) / self.app_name
         else:  # Linux/macOS
-            config_dir = Path.home() / '.config' / self.app_name
+            config_dir = Path.home() / ".config" / self.app_name
 
         config_dir.mkdir(parents=True, exist_ok=True)
-        return config_dir / 'settings.json'
+        return config_dir / "settings.json"
 
-    def _get_default_settings(self) -> Dict[str, Any]:
+    def _get_default_settings(self) -> dict[str, Any]:
         """デフォルト設定を取得"""
         return {
             # 一般設定
@@ -43,7 +43,6 @@ class SettingsManager:
             "auto_save": False,
             "confirm_exit": True,
             "remember_window": True,
-
             # UI設定
             "theme": "ライト",
             "thumbnail_size": 160,
@@ -51,36 +50,32 @@ class SettingsManager:
             "show_page_numbers": True,
             "show_file_names": True,
             "show_tooltips": True,
-
             # ウィンドウ設定
             "window_width": 1200,
             "window_height": 800,
             "window_x": 100,
             "window_y": 100,
             "window_maximized": False,
-
             # パフォーマンス設定
             "cache_size_mb": 200,
             "thread_count": 4,
             "thumbnail_dpi": 150,
             "preload_pages": False,
-
             # 詳細設定
             "log_level": "WARNING",
             "log_to_file": True,
             "hardware_acceleration": False,
             "preview_mode": False,
-
             # 最近使用したファイル
             "recent_files": [],
-            "max_recent_files": 10
+            "max_recent_files": 10,
         }
 
     def load_settings(self):
         """設定をファイルから読み込み"""
         try:
             if self.settings_file.exists():
-                with open(self.settings_file, encoding='utf-8') as f:
+                with open(self.settings_file, encoding="utf-8") as f:
                     loaded_settings = json.load(f)
 
                 # デフォルト設定をベースに、読み込んだ設定で上書き
@@ -102,7 +97,7 @@ class SettingsManager:
             # 設定ディレクトリが存在することを確認
             self.settings_file.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(self.settings_file, 'w', encoding='utf-8') as f:
+            with open(self.settings_file, "w", encoding="utf-8") as f:
                 json.dump(self._current_settings, f, indent=2, ensure_ascii=False)
 
             self.logger.info(f"Settings saved to {self.settings_file}")
@@ -118,11 +113,11 @@ class SettingsManager:
         """設定値を設定"""
         self._current_settings[key] = value
 
-    def update(self, settings: Dict[str, Any]):
+    def update(self, settings: dict[str, Any]):
         """複数の設定値を一括更新"""
         self._current_settings.update(settings)
 
-    def get_all(self) -> Dict[str, Any]:
+    def get_all(self) -> dict[str, Any]:
         """すべての設定を取得"""
         return self._current_settings.copy()
 
