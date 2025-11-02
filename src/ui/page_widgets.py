@@ -489,7 +489,7 @@ class OutputArea(QWidget):
 
                             thumbnail_filename = f"thumb_{Path(source_file).stem}_p{page_number + 1}.png"
                             # 一時ディレクトリを検索
-                            for temp_dir in [tempfile.gettempdir(), "/tmp"]:
+                            for temp_dir in [tempfile.gettempdir()]:
                                 potential_path = os.path.join(temp_dir, thumbnail_filename)
                                 if os.path.exists(potential_path):
                                     thumbnail_path = potential_path
@@ -518,9 +518,6 @@ class OutputArea(QWidget):
         """ドロップ位置から挿入インデックスを計算"""
         if not self.page_widgets:
             return 0
-
-        # グリッドレイアウトの列数を計算
-        cols = max(1, self.width() // 170)
 
         # ドロップ位置に最も近いウィジェットを探す
         min_distance = float("inf")

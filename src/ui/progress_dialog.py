@@ -258,7 +258,7 @@ def test_progress_dialog():
 
     # プログレスマネージャーを使用
     with ProgressManager() as pm:
-        dialog = pm.start_progress("テスト処理", cancelable=True)
+        _dialog = pm.start_progress("テスト処理", cancelable=True)
         pm.set_range(0, 100)
         pm.show_progress()
 

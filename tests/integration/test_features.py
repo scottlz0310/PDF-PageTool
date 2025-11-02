@@ -9,12 +9,12 @@ import os
 import sys
 from pathlib import Path
 
+from src.pdf_operations import PDFOperations
+from src.utils.logger import get_logger
+
 # プロジェクトルートをPythonパスに追加
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
-
-from src.pdf_operations import PDFOperations
-from src.utils.logger import get_logger
 
 
 def test_pdf_merge():

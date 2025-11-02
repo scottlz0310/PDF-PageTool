@@ -658,7 +658,7 @@ class MainWindow(QMainWindow):
             self._clear_existing_thumbnails()
 
             # 各サムネイルウィジェットのページ情報に対してサムネイルを再生成
-            for file_path, widgets_list in self.thumbnail_widgets.items():
+            for _file_path, widgets_list in self.thumbnail_widgets.items():
                 for widget in widgets_list:
                     if hasattr(widget, "page_info"):
                         page_info = widget.page_info
