@@ -68,7 +68,6 @@ idea/
 *.whl
 .env.*
 .vscode.bak.*
-uv.lock
 .mypy_cache/
 *.sqlite3
 *.db
