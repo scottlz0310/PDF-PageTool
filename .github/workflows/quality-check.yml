@@ -31,6 +31,23 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         run: uv python install ${{ matrix.python-version }}
 
+      - name: Install system dependencies for Qt
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgl1 \
+            libegl1 \
+            libxkbcommon-x11-0 \
+            libxcb-icccm4 \
+            libxcb-image0 \
+            libxcb-keysyms1 \
+            libxcb-randr0 \
+            libxcb-render-util0 \
+            libxcb-xinerama0 \
+            libxcb-xfixes0 \
+            x11-utils \
+            xvfb
+
       - name: Install dependencies
         run: |
           # Install project dependencies
@@ -70,6 +87,9 @@ jobs:
           uv run mypy pdf_pagetool --show-error-codes --show-error-context
 
       - name: Test with pytest
+        env:
+          QT_QPA_PLATFORM: offscreen
+          DISPLAY: ":99"
         run: |
           # Detect package name from pyproject.toml
           if [ -f "pyproject.toml" ]; then
