@@ -133,6 +133,7 @@ def test_theme_system():
 
     try:
         from pdf_pagetool.ui.theme_manager import ThemeManager
+
         from pdf_pagetool.utils.settings_manager import SettingsManager
 
         settings = SettingsManager()
