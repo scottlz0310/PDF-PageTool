@@ -56,9 +56,10 @@ class PDFPageToolLogger:
         self.logger.setLevel(level)
 
         # コンソールハンドラーの設定（カラーログ対応）
+        console_handler: logging.Handler
         if HAS_COLORLOG:
             console_handler = colorlog.StreamHandler()
-            console_format = colorlog.ColoredFormatter(
+            console_format: logging.Formatter = colorlog.ColoredFormatter(
                 "%(log_color)s%(asctime)s - %(name)s - %(levelname)s - %(message)s",
                 datefmt="%Y-%m-%d %H:%M:%S",
                 log_colors={

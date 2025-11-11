@@ -147,11 +147,12 @@ class MainWindow(QMainWindow):
         # メニューバーの問題を修正（クリックのみで展開、オンマウス展開を無効化）
         # より安全なアプローチ：既存のメニューバーを直接制御
         menu_bar = self.ui.menubar if hasattr(self.ui, "menubar") else self.menuBar()
-        if hasattr(menu_bar, "setNativeMenuBar"):
+        if menu_bar and hasattr(menu_bar, "setNativeMenuBar"):
             menu_bar.setNativeMenuBar(False)
 
         # メニューバーでのマウスホバー自動展開を無効にするスタイル設定
-        menu_bar.setStyleSheet("""
+        if menu_bar:
+            menu_bar.setStyleSheet("""
             QMenuBar {
                 background-color: palette(window);
                 color: palette(window-text);
@@ -443,8 +444,9 @@ class MainWindow(QMainWindow):
     def _on_loading_finished(self) -> None:
         """読み込み完了"""
         self.logger.info("All files loaded successfully")
-        if self.statusBar():
-            self.statusBar().showMessage("ファイル読み込み完了", 3000)
+        status_bar = self.statusBar()
+        if status_bar:
+            status_bar.showMessage("ファイル読み込み完了", 3000)
 
     def _on_thumbnail_clicked(self, page_info: PDFPageInfo) -> None:
         """サムネイルクリック時の処理"""
@@ -471,14 +473,16 @@ class MainWindow(QMainWindow):
     def _on_output_page_added(self, page_info: PDFPageInfo) -> None:
         """出力エリアにページが追加された時の処理"""
         self.logger.info(f"Page added to output: {page_info}")
-        if self.statusBar():
-            self.statusBar().showMessage(f"ページを出力に追加しました: ページ {page_info.page_number + 1}", 2000)
+        status_bar = self.statusBar()
+        if status_bar:
+            status_bar.showMessage(f"ページを出力に追加しました: ページ {page_info.page_number + 1}", 2000)
 
     def _on_output_page_removed(self, page_info: PDFPageInfo) -> None:
         """出力エリアからページが削除された時の処理"""
         self.logger.info(f"Page removed from output: {page_info}")
-        if self.statusBar():
-            self.statusBar().showMessage(f"ページを出力から削除しました: ページ {page_info.page_number + 1}", 2000)
+        status_bar = self.statusBar()
+        if status_bar:
+            status_bar.showMessage(f"ページを出力から削除しました: ページ {page_info.page_number + 1}", 2000)
 
     def open_files(self) -> None:
         """ファイルを開くダイアログ"""

@@ -28,7 +28,7 @@ except ImportError:
 try:
     from PIL import Image
 except ImportError:
-    Image = None  # type: ignore[assignment]
+    Image = None
 import tempfile
 
 from ..utils.logger import get_logger

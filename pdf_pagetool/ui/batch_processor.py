@@ -431,7 +431,9 @@ class BatchProcessorDialog(QDialog):
             # ファイルリスト取得
             input_files = []
             for i in range(self.file_list.count()):
-                input_files.append(self.file_list.item(i).text())
+                item = self.file_list.item(i)
+                if item:
+                    input_files.append(item.text())
 
             # パラメータ準備
             parameters = {}

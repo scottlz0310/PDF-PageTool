@@ -219,31 +219,36 @@ class PageThumbnailWidget(QLabel):
     def _show_context_menu(self, position: QPoint) -> None:
         """右クリックコンテキストメニュー表示"""
         menu = QtWidgets.QMenu(self)
-        if menu is None:
-            return
 
         # 出力エリアの場合のみ回転メニューと削除メニューを表示
         # 入力エリアでは原稿ファイルを編集しない原則に従う
         if self.is_output:
             # 回転メニュー
             rotate_menu = menu.addMenu("回転")
+            if rotate_menu is None:
+                return
 
             rotate_right = rotate_menu.addAction("右90°回転")
-            rotate_right.triggered.connect(lambda: self.rotation_requested.emit(self.page_info, 90))
+            if rotate_right:
+                rotate_right.triggered.connect(lambda: self.rotation_requested.emit(self.page_info, 90))
 
             rotate_left = rotate_menu.addAction("左90°回転")
-            rotate_left.triggered.connect(lambda: self.rotation_requested.emit(self.page_info, -90))
+            if rotate_left:
+                rotate_left.triggered.connect(lambda: self.rotation_requested.emit(self.page_info, -90))
 
             rotate_180 = rotate_menu.addAction("180°回転")
-            rotate_180.triggered.connect(lambda: self.rotation_requested.emit(self.page_info, 180))
+            if rotate_180:
+                rotate_180.triggered.connect(lambda: self.rotation_requested.emit(self.page_info, 180))
 
             menu.addSeparator()
             remove_action = menu.addAction("出力から削除")
-            remove_action.triggered.connect(lambda: self.removal_requested.emit(self.page_info))
+            if remove_action:
+                remove_action.triggered.connect(lambda: self.removal_requested.emit(self.page_info))
         else:
             # 入力エリアでは情報表示のみ
             info_action = menu.addAction(f"ページ {self.page_info.page_number + 1}")
-            info_action.setEnabled(False)
+            if info_action:
+                info_action.setEnabled(False)
 
         menu.exec(position)
 
@@ -251,17 +256,18 @@ class PageThumbnailWidget(QLabel):
         if event is None:
             return
         """ドラッグエンター"""
+        mime_data = event.mimeData()
+        if mime_data is None:
+            event.ignore()
+            return
+
         # ページ間のドラッグ&ドロップの場合
-        if (
-            event.mimeData()
-            and event.mimeData().hasText()
-            and (event.mimeData().text() if event.mimeData() else "").startswith("page:")
-        ):
+        if mime_data.hasText() and mime_data.text().startswith("page:"):
             event.acceptProposedAction()
             return
 
         # 外部ファイルのドラッグの場合は親ウィンドウに委譲
-        if event.mimeData() and event.mimeData().hasUrls():
+        if mime_data.hasUrls():
             # 親ウィンドウのMainWindowにイベントを伝播させる
             event.ignore()
             return
@@ -273,12 +279,13 @@ class PageThumbnailWidget(QLabel):
         if event is None:
             return
         """ドロップ"""
+        mime_data = event.mimeData()
+        if mime_data is None:
+            event.ignore()
+            return
+
         # ページ間のドロッグ&ドロップの場合のみ処理
-        if (
-            event.mimeData()
-            and event.mimeData().hasText()
-            and (event.mimeData().text() if event.mimeData() else "").startswith("page:")
-        ):
+        if mime_data.hasText() and mime_data.text().startswith("page:"):
             if self.is_output:
                 # 出力エリアでの並び替え処理
                 event.acceptProposedAction()
@@ -426,17 +433,18 @@ class OutputArea(QWidget):
         if event is None:
             return
         """ドラッグエンター"""
+        mime_data = event.mimeData()
+        if mime_data is None:
+            event.ignore()
+            return
+
         # ページ間のドラッグ&ドロップの場合
-        if (
-            event.mimeData()
-            and event.mimeData().hasText()
-            and (event.mimeData().text() if event.mimeData() else "").startswith("page:")
-        ):
+        if mime_data.hasText() and mime_data.text().startswith("page:"):
             event.acceptProposedAction()
             return
 
         # 外部ファイルのドラッグの場合は親ウィンドウに委譲
-        if event.mimeData() and event.mimeData().hasUrls():
+        if mime_data.hasUrls():
             # 親ウィンドウのMainWindowにイベントを伝播させる
             event.ignore()
             return
@@ -454,9 +462,14 @@ class OutputArea(QWidget):
         if event is None:
             return
         """ドロップ"""
+        mime_data = event.mimeData()
+        if mime_data is None:
+            event.ignore()
+            return
+
         # ページ間のドラッグ&ドロップの場合のみ処理
-        if event.mimeData() and event.mimeData().hasText():
-            drag_data = event.mimeData().text() if event.mimeData() else ""
+        if mime_data.hasText():
+            drag_data = mime_data.text()
             if drag_data.startswith("page:"):
                 try:
                     # ドラッグデータを解析

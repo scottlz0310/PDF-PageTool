@@ -50,7 +50,8 @@ repos:
           types-Pillow,
           types-colorama,
         ]
-        args: [--ignore-missing-imports, --strict]
+        # Use pyproject.toml configuration instead of command-line args
+        args: []
 
   # Security linting with bandit
   - repo: https://github.com/PyCQA/bandit
