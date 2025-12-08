@@ -8,8 +8,8 @@ version = "1.0.0"
 description = "Professional PDF page editing tool with intuitive UI"
 readme = "README.md"
 classifiers = [ "Development Status :: 5 - Production/Stable", "Intended Audience :: End Users/Desktop", "Operating System :: OS Independent", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.13", "Programming Language :: Python :: 3.9", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Topic :: Office/Business", "Topic :: Multimedia :: Graphics",]
-requires-python = ">=3.11"
-dependencies = [ "PyQt6>=6.4.0", "qt-theme-manager>=0.1.0", "pypdf>=4.0.0", "pikepdf>=8.0.0", "pdf2image>=1.16.0", "Pillow>=9.0.0", "python-dotenv>=1.0.0", "colorlog>=6.7.0",]
+requires-python = ">=3.14.1"
+dependencies = [ "PyQt6>=6.4.0", "qt-theme-manager>=0.2.4", "pypdf>=4.3.1", "pikepdf>=8.15.1", "pdf2image>=1.16.0", "Pillow>=9.5.0", "python-dotenv>=1.0.0", "colorlog>=6.7.0",]
 license = "MIT"
 
 [[project.authors]]
@@ -107,12 +107,12 @@ include = [ "pdf_pagetool*",]
 
 [dependency-groups]
 dev = [
-    "bandit>=1.8.6",
-    "mypy>=1.17.1",
+    "bandit>=1.9.2",
+    "mypy>=1.19.0",
     "pytest>=8.4.2",
     "pytest-cov>=6.3.0",
     "pytest-qt>=4.0.0",
-    "pre-commit>=2.20.0",
+    "pre-commit>=2.21.0",
     "ruff>=0.12.12",
     "safety>=3.6.2",
 ]
