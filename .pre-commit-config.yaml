@@ -96,10 +96,10 @@ repos:
 
   # Upgrade Python syntax
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.21.0
+    rev: v3.21.2
     hooks:
       - id: pyupgrade
-        args: [--py314-plus]
+        args: [--py313-plus]
 
   # Check for Python 2/3 compatibility issues
   - repo: https://github.com/asottile/add-trailing-comma

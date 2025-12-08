@@ -246,7 +246,7 @@ class ProgressManager:
             self.dialog.close()
             self.dialog = None
 
-    def __enter__(self) -> "ProgressManager":
+    def __enter__(self) -> ProgressManager:
         """コンテキストマネージャー対応"""
         return self
 
