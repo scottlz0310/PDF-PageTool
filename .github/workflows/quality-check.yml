@@ -138,7 +138,6 @@ jobs:
           fi
           echo "Installing Python $PYTHON_VERSION for pre-commit"
           uv python install $PYTHON_VERSION
-          uv python pin $PYTHON_VERSION
 
       - name: Install pre-commit
         run: |
