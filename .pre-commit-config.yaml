@@ -99,7 +99,7 @@ repos:
     rev: v3.21.0
     hooks:
       - id: pyupgrade
-        args: [--py311-plus]
+        args: [--py314-plus]
 
   # Check for Python 2/3 compatibility issues
   - repo: https://github.com/asottile/add-trailing-comma
@@ -134,7 +134,7 @@ repos:
 
 # Configuration for specific hooks
 default_language_version:
-  python: python3.13
+  python: python3.14
 
 # Global excludes
 exclude: |
