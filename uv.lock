@@ -619,12 +619,12 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "colorlog", specifier = ">=6.10.1" },
-    { name = "pdf2image", specifier = ">=1.16.3" },
+    { name = "pdf2image", specifier = ">=1.17.0" },
     { name = "pikepdf", specifier = ">=10.0.2" },
     { name = "pillow", specifier = ">=12.0.0" },
     { name = "pypdf", specifier = ">=6.4.1" },
-    { name = "pyqt6", specifier = ">=6.4.2" },
-    { name = "python-dotenv", specifier = ">=1.0.1" },
+    { name = "pyqt6", specifier = ">=6.10.1" },
+    { name = "python-dotenv", specifier = ">=1.2.1" },
     { name = "qt-theme-manager", specifier = ">=1.1.0" },
 ]
 
@@ -635,14 +635,14 @@ dev = [
     { name = "pre-commit", specifier = ">=4.5.0" },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
-    { name = "pytest-qt", specifier = ">=4.0.2" },
+    { name = "pytest-qt", specifier = ">=4.5.0" },
     { name = "ruff", specifier = ">=0.14.8" },
     { name = "safety", specifier = ">=3.7.0" },
 ]
 test = [
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "pytest-cov", specifier = ">=7.0.0" },
-    { name = "pytest-qt", specifier = ">=4.0.2" },
+    { name = "pytest-qt", specifier = ">=4.5.0" },
 ]
 
 [[package]]
