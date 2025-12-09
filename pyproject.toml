@@ -8,7 +8,7 @@ version = "1.0.0"
 description = "Professional PDF page editing tool with intuitive UI"
 readme = "README.md"
 classifiers = [ "Development Status :: 5 - Production/Stable", "Intended Audience :: End Users/Desktop", "Operating System :: OS Independent", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.13", "Programming Language :: Python :: 3.9", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.12", "Topic :: Office/Business", "Topic :: Multimedia :: Graphics",]
-requires-python = ">=3.14.1"
+requires-python = ">=3.14.2"
 dependencies = [ "PyQt6>=6.10.1", "qt-theme-manager>=1.1.0", "pypdf>=6.4.1", "pikepdf>=10.0.2", "pdf2image>=1.17.0", "Pillow>=12.0.0", "python-dotenv>=1.2.1", "colorlog>=6.10.1",]
 license = "MIT"
 
