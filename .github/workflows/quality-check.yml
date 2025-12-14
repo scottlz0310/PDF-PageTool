@@ -130,14 +130,8 @@ jobs:
 
       - name: Set up Python
         run: |
-          # Detect Python version from pyproject.toml requires-python field
-          if [ -f "pyproject.toml" ]; then
-            PYTHON_VERSION=$(uv run python -c "import tomllib, re; f=open('pyproject.toml','rb'); data=tomllib.load(f); req=data.get('project',{}).get('requires-python','>=3.14'); match=re.search(r'(\d+\.\d+)', req); print(match.group(1) if match else '3.14')" 2>/dev/null || echo "3.14")
-          else
-            PYTHON_VERSION="3.14"
-          fi
-          echo "Installing Python $PYTHON_VERSION for pre-commit"
-          uv python install $PYTHON_VERSION
+          # Install Python 3.14 for pre-commit (matches .pre-commit-config.yaml default_language_version)
+          uv python install 3.14
 
       - name: Install pre-commit
         run: |
