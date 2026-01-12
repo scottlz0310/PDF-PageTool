@@ -923,7 +923,7 @@ requires-dist = [
     { name = "pdf2image", specifier = ">=1.17.0" },
     { name = "pikepdf", specifier = ">=10.1.0" },
     { name = "pillow", specifier = ">=12.1.0" },
-    { name = "pypdf", specifier = ">=6.5.0" },
+    { name = "pypdf", specifier = ">=6.6.0" },
     { name = "pyqt6", specifier = ">=6.10.2" },
     { name = "python-dotenv", specifier = ">=1.2.1" },
     { name = "qt-theme-manager", specifier = ">=1.1.0" },
