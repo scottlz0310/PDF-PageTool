@@ -107,7 +107,7 @@ include = [ "pdf_pagetool*",]
 
 [dependency-groups]
 dev = [
-    "bandit>=1.9.2",
+    "bandit>=1.9.3",
     "mypy>=1.19.1",
     "pytest>=9.0.2",
     "pytest-cov>=7.0.0",
