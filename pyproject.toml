@@ -113,7 +113,7 @@ dev = [
     "pytest-cov>=7.0.0",
     "pytest-qt>=4.5.0",
     "pre-commit>=4.5.1",
-    "ruff>=0.15.0",
+    "ruff>=0.15.1",
     "safety>=3.7.0",
 ]
 test = [
